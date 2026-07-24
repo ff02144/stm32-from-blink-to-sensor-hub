@@ -48,7 +48,13 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-uint8_t oled_addr=0x3C;
+uint8_t oled_addr=0x3C; //OLED位址
+#define RB_SIZE 64
+volatile uint8_t rb_buffer[RB_SIZE];
+volatile uint16_t rb_head=0;
+volatile uint16_t rb_tail=0;
+volatile uint16_t rb_count=0;
+volatile uint8_t rx_buffer = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -278,6 +284,26 @@ void UART_SendString(char *str)
 
 	}
 	    }
+
+
+void RB_Push(uint8_t data){
+	if(rb_count<RB_SIZE){
+		rb_buffer[rb_tail]=data;
+		rb_tail=(rb_tail+1)&(RB_SIZE-1);
+		rb_count++;
+	}
+}
+
+int RB_Pop(uint8_t *data){
+
+	if(rb_count>0){
+		*data=rb_buffer[rb_head];
+		rb_head=(rb_head+1)&(RB_SIZE-1);
+		rb_count--;
+		return 1;
+	}
+	return 0;
+}
 /* USER CODE END 0 */
 
 /**
@@ -313,34 +339,40 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
   if (oled_addr != 0xFF)
   {
       OLED_Init();           // 初始化 OLED
 
 
 
+   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+        HAL_Delay(100);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+        HAL_Delay(100);
       HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        HAL_Delay(200);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-        HAL_Delay(200);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        HAL_Delay(200);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+        HAL_Delay(100);
+   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 
         // ★ 清除後閃3下代表清除完成
         for (int i=0; i<3; i++)
         {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+      //      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
             HAL_Delay(200);
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+          //  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
             HAL_Delay(200);
         }
 
 
       OLED_Clear();          //清除螢幕全暗
-
-
   }
+
+
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);   // 啟用接收中斷
+  HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);       // 設定優先級（1，低於 EXTI0）
+  HAL_NVIC_EnableIRQ(USART1_IRQn);               // 在 NVIC 中啟用 USART1 中斷
+
+  HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);   // 啟動接收
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -362,14 +394,40 @@ int main(void)
   OLED_WriteString(oled_buf);
 
   char uart_buf[50];
-  sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
-      UART_SendString(uart_buf);
+ sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
+ // UART_SendString(uart_buf);
+/*
+      uint8_t received_byte;
+      if(RB_Pop(&received_byte))
+      {
+    	  HAL_UART_Transmit(&huart1,&received_byte,1,100);
+      }
+	  HAL_Delay(100);
 
-  	  HAL_Delay(500);
+*/
+ uint8_t received_byte;
+   if (RB_Pop(&received_byte))
+   {
+       // ★ 加入這 4 行：成功取出資料時，LED 閃爍 2 下
+       for (int i = 0; i < 2; i++)
+       {
+           HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+           HAL_Delay(100);
+       }
+
+       // 把資料傳回去（Echo）
+       HAL_UART_Transmit(&huart1, &received_byte, 1, 100);
+   }
+
+   HAL_Delay(100);
+
   }
-  /* USER CODE END 3 */
-}
 
+
+
+  /* USER CODE END 3 */
+
+}
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -549,7 +607,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+ // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -564,7 +622,23 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART1)
+    {
+        // ★ 翻轉 LED
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
+        // ★ 將收到的資料放入 Ring Buffer
+        RB_Push(rx_buffer);
+
+        // ★ 先「中止」先前的接收（如果有）
+        HAL_UART_AbortReceive(&huart1);
+
+        // ★ 重新啟動接收
+        HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
+    }
+}
 /* USER CODE END 4 */
 
 /**

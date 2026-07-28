@@ -319,7 +319,6 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -371,8 +370,33 @@ int main(void)
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);   // 啟用接收中斷
   HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);       // 設定優先級（1，低於 EXTI0）
   HAL_NVIC_EnableIRQ(USART1_IRQn);               // 在 NVIC 中啟用 USART1 中斷
-
   HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);   // 啟動接收
+
+
+  // ===  I2C 掃描器（UART 版） ===
+  char scan_msg[50];
+  UART_SendString("\r\n=== I2C Scanner Start ===\r\n");
+
+  for (uint8_t addr=0x08;addr<=0x77;addr++)
+  {
+      // HAL 的地址要左移 1 位（7-bit 轉 8-bit）
+      if (HAL_I2C_IsDeviceReady(&hi2c1,(addr<<1),1,100)==HAL_OK)
+      {
+          sprintf(scan_msg,"Device found at 0x%02X\r\n",addr);
+          UART_SendString(scan_msg);
+      }
+  }
+
+  UART_SendString("=== I2C Scanner End ===\r\n\r\n");
+
+  // === 2. 原本的 OLED 初始化 ===
+  if (oled_addr != 0xFF)
+  {
+      OLED_Init();    // 初始化 OLED
+  }
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -395,16 +419,8 @@ int main(void)
 
   char uart_buf[50];
  sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
- // UART_SendString(uart_buf);
-/*
-      uint8_t received_byte;
-      if(RB_Pop(&received_byte))
-      {
-    	  HAL_UART_Transmit(&huart1,&received_byte,1,100);
-      }
-	  HAL_Delay(100);
+ // UART_SendString(uart_buf); //光敏回傳電腦
 
-*/
  uint8_t received_byte;
    if (RB_Pop(&received_byte))
    {
@@ -419,15 +435,14 @@ int main(void)
        HAL_UART_Transmit(&huart1, &received_byte, 1, 100);
    }
 
-   HAL_Delay(100);
-
+   HAL_Delay(500);
   }
 
 
 
   /* USER CODE END 3 */
-
 }
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -607,7 +622,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
- // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;

@@ -386,9 +386,28 @@ int main(void)
           UART_SendString(scan_msg);
       }
   }
+  // ===  I2C 掃描器（結束） ===
+  // ===  讀取who am I 喚醒 MPU6050===
 
-  UART_SendString("=== I2C Scanner End ===\r\n\r\n");
+  uint8_t who_am_i = 0;
 
+  HAL_I2C_Mem_Read(&hi2c1, 0x68 << 1, 0x75, I2C_MEMADD_SIZE_8BIT, &who_am_i, 1, 100);
+
+  sprintf(scan_msg, "WHO_AM_I = 0x%02X\r\n", who_am_i);
+  UART_SendString(scan_msg);
+
+  if (who_am_i == 0x68){
+	  UART_SendString("MPU6050 found! (WHO_AM_I correct)\r\n");
+
+  uint8_t wake_cmd = 0x00;
+   HAL_I2C_Mem_Write(&hi2c1, 0x68 << 1, 0x6B, I2C_MEMADD_SIZE_8BIT, &wake_cmd, 1, 100);
+   UART_SendString("MPU6050 woken up!\r\n");
+}
+else
+{
+   UART_SendString("MPU6050 NOT found! (WHO_AM_I error)\r\n");
+}
+// ===  讀取who am I 喚醒 MPU6050結束===
   // === 2. 原本的 OLED 初始化 ===
   if (oled_addr != 0xFF)
   {

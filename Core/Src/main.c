@@ -54,7 +54,7 @@ volatile uint8_t rb_buffer[RB_SIZE];
 volatile uint16_t rb_head=0;
 volatile uint16_t rb_tail=0;
 volatile uint16_t rb_count=0;
-volatile uint8_t rx_buffer = 0;
+ uint8_t rx_buffer = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,6 +65,8 @@ static void MX_ADC1_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void OLED_Clear(void);
+void MPU6050_ReadAccel(int16_t *ax, int16_t *ay, int16_t *az);
+void MPU6050_ReadGyro(int16_t *gx, int16_t *gy, int16_t *gz);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -304,6 +306,30 @@ int RB_Pop(uint8_t *data){
 	}
 	return 0;
 }
+
+
+/*   MPU6050   */
+void MPU6050_ReadAccel(int16_t *ax, int16_t *ay, int16_t *az)
+{
+    uint8_t data[6];
+    HAL_I2C_Mem_Read(&hi2c1,0x68<<1,0x3B,I2C_MEMADD_SIZE_8BIT,data,6,100);
+
+    *ax=(int16_t)((data[0]<<8)|data[1]);
+    *ay=(int16_t)((data[2]<<8)|data[3]);
+    *az=(int16_t)((data[4]<<8)|data[5]);
+}
+
+void MPU6050_ReadGyro(int16_t *gx, int16_t *gy, int16_t *gz)
+{
+    uint8_t data[6];
+    HAL_I2C_Mem_Read(&hi2c1,0x68<<1,0x43,I2C_MEMADD_SIZE_8BIT,data,6,100);
+
+    *gx=(int16_t)((data[0]<<8)|data[1]);
+    *gy=(int16_t)((data[2]<<8)|data[3]);
+    *gz=(int16_t)((data[4]<<8)|data[5]);
+}
+
+/*   MPU6050   */
 /* USER CODE END 0 */
 
 /**
@@ -439,17 +465,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
+/* 光敏  */
   uint32_t adc_val=ADC_Read();
   uint16_t voltage_mV =(uint16_t)(adc_val*3300.0f/4096.0f);
   char oled_buf[20];
 
-  sprintf(oled_buf,"L:%4d %d.%02dV",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
+  sprintf(oled_buf,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
 
 
   OLED_Clear();
   OLED_WriteString(oled_buf);
-
+  /* 光敏  */
+  /* TTL  */
   char uart_buf[50];
  sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
  // UART_SendString(uart_buf); //光敏回傳電腦
@@ -468,10 +495,19 @@ int main(void)
        HAL_UART_Transmit(&huart1, &received_byte, 1, 100);
    }
 
+   int16_t ax, ay, az, gx, gy, gz;
+
+   MPU6050_ReadAccel(&ax, &ay, &az);
+   MPU6050_ReadGyro(&gx, &gy, &gz);
+
+   char msg[80];
+   sprintf(msg, "A: %6d %6d %6d | G: %6d %6d %6d\r\n", ax, ay, az, gx, gy, gz);
+   UART_SendString(msg);
+
    HAL_Delay(500);
   }
 
-
+  /* TTL  */
 
   /* USER CODE END 3 */
 }

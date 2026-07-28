@@ -396,17 +396,31 @@ int main(void)
   sprintf(scan_msg, "WHO_AM_I = 0x%02X\r\n", who_am_i);
   UART_SendString(scan_msg);
 
-  if (who_am_i == 0x68){
-	  UART_SendString("MPU6050 found! (WHO_AM_I correct)\r\n");
+  if (who_am_i == 0x68)
+  {
+      UART_SendString("MPU6050 found! (WHO_AM_I correct)\r\n");
 
-  uint8_t wake_cmd = 0x00;
-   HAL_I2C_Mem_Write(&hi2c1, 0x68 << 1, 0x6B, I2C_MEMADD_SIZE_8BIT, &wake_cmd, 1, 100);
-   UART_SendString("MPU6050 woken up!\r\n");
-}
-else
-{
-   UART_SendString("MPU6050 NOT found! (WHO_AM_I error)\r\n");
-}
+      //  加入延遲，讓晶片穩定
+      HAL_Delay(100);
+
+      // 喚醒 MPU6050
+      uint8_t wake_cmd = 0x00;
+      HAL_StatusTypeDef status = HAL_I2C_Mem_Write(&hi2c1, 0x68 << 1, 0x6B, I2C_MEMADD_SIZE_8BIT, &wake_cmd, 1, 100);
+
+      // 檢查寫入是否成功
+      if (status == HAL_OK)
+      {
+          UART_SendString("MPU6050 woken up! (write success)\r\n");
+      }
+      else
+      {
+          UART_SendString("MPU6050 wake up FAILED! (I2C error)\r\n");
+      }
+  }
+  else
+  {
+      UART_SendString("MPU6050 NOT found! (WHO_AM_I error)\r\n");
+  }
 // ===  讀取who am I 喚醒 MPU6050結束===
   // === 2. 原本的 OLED 初始化 ===
   if (oled_addr != 0xFF)

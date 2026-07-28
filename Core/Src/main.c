@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include <math.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
@@ -71,7 +71,13 @@ void MPU6050_ReadGyro(int16_t *gx, int16_t *gy, int16_t *gz);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+#define PI 3.14159265f
+/*互補濾波*/
+#define DT 0.01f
+#define ALPHA 0.98f
+float roll=0.0f;
+float pitch=0.0f;
+/*互補濾波*/
 void OLED_WriteCmd(uint8_t cmd)
 {
     HAL_I2C_Mem_Write(&hi2c1, oled_addr << 1, 0x00, 1, &cmd, 1, 100);
@@ -329,6 +335,27 @@ void MPU6050_ReadGyro(int16_t *gx, int16_t *gy, int16_t *gz)
     *gz=(int16_t)((data[4]<<8)|data[5]);
 }
 
+
+/*	互補濾波  */
+void MPU6050_InitAngles(void)
+{
+    int16_t ax,ay,az;
+    MPU6050_ReadAccel(&ax,&ay,&az);
+
+    // 將原始值換算成重力加速度（g）
+    float ax_g=ax/16384.0f;
+    float ay_g=ay/16384.0f;
+    float az_g=az/16384.0f;
+
+    // 計算初始 Roll 和 Pitch（靜止時使用加速度計）
+    roll=atan2(ay_g,az_g)*180.0f/PI;
+    pitch=atan2(-ax_g,sqrt(ay_g*ay_g+az_g*az_g))*180.0f/PI;
+
+    char msg[60];
+    sprintf(msg,"Init Roll: %.2f, Pitch: %.2f\r\n",roll,pitch);
+    UART_SendString(msg);
+}
+/*	互補濾波  */
 /*   MPU6050   */
 /* USER CODE END 0 */
 
@@ -494,21 +521,57 @@ int main(void)
        // 把資料傳回去（Echo）
        HAL_UART_Transmit(&huart1, &received_byte, 1, 100);
    }
+   /* TTL  */
+   /*   MPU6050   */
+   int16_t ax,ay,az,gx,gy,gz;
 
-   int16_t ax, ay, az, gx, gy, gz;
-
-   MPU6050_ReadAccel(&ax, &ay, &az);
-   MPU6050_ReadGyro(&gx, &gy, &gz);
+   MPU6050_ReadAccel(&ax,&ay,&az);
+   MPU6050_ReadGyro(&gx,&gy,&gz);
 
    char msg[80];
-   sprintf(msg, "A: %6d %6d %6d | G: %6d %6d %6d\r\n", ax, ay, az, gx, gy, gz);
+  // sprintf(msg, "A: %6d %6d %6d | G: %6d %6d %6d\r\n", ax, ay, az, gx, gy, gz);
+ //  UART_SendString(msg);
+
+//   HAL_Delay(500);
+
+  /*   MPU6050互補濾波   */
+
+
+  //讀取原始數據
+
+
+
+  //換算
+float ax_g=ax/16384.0f;
+float ay_g=ay/16384.0f;
+float az_g=az/16384.0f;
+
+  //陀螺儀
+float gyro_x=gx/131.0f;
+float gyro_y=gy/131.0f;
+float gyro_z=gz/131.0f;
+(void)gyro_z;
+//加速度計算角度
+float accel_roll=atan2(ay_g,az_g)*180.0f/PI;
+float accel_pitch=atan2(-ax_g,sqrt(ay_g*ay_g+az_g*az_g))*180.0f/PI;
+
+  //陀螺儀積分
+roll+=gyro_x*DT;
+pitch+=gyro_y*DT;
+
+    //互補濾波融合
+roll=ALPHA*roll+(1.0f-ALPHA)*accel_roll;
+pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
+
+//輸出
+
+   sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
    UART_SendString(msg);
 
-   HAL_Delay(500);
+   HAL_Delay(10);
+  /*   MPU6050互補濾波   */
+  /*   MPU6050   */
   }
-
-  /* TTL  */
-
   /* USER CODE END 3 */
 }
 

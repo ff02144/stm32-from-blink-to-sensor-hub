@@ -1,18 +1,18 @@
 ## 專案簡介
 ## 硬體需求
 - **開發板**:
-	- MCU:STM32F103C8T6
+- MCU:STM32F103C8T6
 - **感測器與顯示**:
-	- OLED螢幕顯示器(I2C)
-	- MPU-6050模塊三軸速度陀螺儀(I2C)
-	- 光敏電阻模組(類比輸出)
+- OLED螢幕顯示器(I2C)
+- MPU-6050模塊三軸速度陀螺儀(I2C)
+- 光敏電阻模組(類比輸出)
 - **其他**:
-	- TTL-USB 轉接器
-	- ST-LINK V2 燒錄器
+- TTL-USB 轉接器
+- ST-LINK V2 燒錄器
 ## 開發環境/搭配工具
-	- STM32CubeIDE
-	- STM32CubeMX
-	- PuTTY
+- STM32CubeIDE
+- STM32CubeMX
+- PuTTY
 ## 版本紀錄
 - [v1.0-blink](https://github.com/ff02144/LED_Blink/releases/tag/v1.0-blink) - 基礎 LED 閃爍
 - [v2.0-blink](https://github.com/ff02144/LED_Blink/releases/tag/v2.0) - 按鍵中斷

@@ -23,6 +23,7 @@
 - [v3.4-blink](https://github.com/ff02144/stm32-from-blink-to-sensor-hub/releases/tag/v3.4)-OLED + ADC + UART中斷Echo
 - [v4.0-blink](https://github.com/ff02144/stm32-from-blink-to-sensor-hub/releases/tag/v4.0-blink)-加速度和陀螺儀原始數據讀取
 - [v4.1-blink](https://github.com/ff02144/stm32-from-blink-to-sensor-hub/releases/tag/v4.1)-加速度和陀螺儀互補濾波
+- [v4.1-blink](https://github.com/ff02144/stm32-from-blink-to-sensor-hub/releases/tag/v4.2-blink))-陀螺儀校準+oled整合
 
 ## 展示影片: 
 LED 閃爍:
@@ -51,3 +52,6 @@ STM32 Blink 加速度陀螺儀原始數據讀取 DEMO:
 
 STM32 Blink 加速度陀螺儀 互補濾波 DEMO
 - [影片](https://youtu.be/hlgaDxX-A7Y?si=JMBmCjouf2lho6x8)
+
+STM32 Blink 陀螺儀校準+oled整合 DEMO
+- [影片]

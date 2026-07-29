@@ -294,15 +294,33 @@ void OLED_WriteString(char *str)
         str++;
     }
 }
-uint32_t ADC_Read(void)
+
+/*  ADC彙整  */
+// 讀取指定的ADC通道
+uint32_t ADC_Read_Channel(uint32_t channel)
 {
-	 HAL_ADC_Start(&hadc1);   // ★ 啟動 ADC（即使連續模式，也要先啟動一次）
-	    if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)  // 等待轉換完成
-	    {
-	        return HAL_ADC_GetValue(&hadc1);
-	    }
-	    return 0;
+    ADC_ChannelConfTypeDef sConfig={0};
+
+    // 設定要讀取的通道
+    sConfig.Channel=channel;
+    sConfig.Rank=1;
+    sConfig.SamplingTime=ADC_SAMPLETIME_13CYCLES_5;
+
+    if (HAL_ADC_ConfigChannel(&hadc1,&sConfig)!=HAL_OK)
+    {
+        return 0;
+    }
+
+    HAL_ADC_Start(&hadc1);
+    if (HAL_ADC_PollForConversion(&hadc1,100)==HAL_OK)
+    {
+        return HAL_ADC_GetValue(&hadc1);
+    }
+    return 0;
 }
+
+
+/*  ADC彙整  */
 void UART_SendString(char *str)
 	    {
 	if (uart_tx_done)  // 只有空閒時才送
@@ -537,18 +555,22 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-/* 光敏  */
-  uint32_t adc_val=ADC_Read();
-  uint16_t voltage_mV =(uint16_t)(adc_val*3300.0f/4096.0f);
+/* ADC彙整 */
+  uint32_t light_adc=ADC_Read_Channel(ADC_CHANNEL_0);
+  uint16_t voltage_mV_light =(uint16_t)(light_adc*3300.0f/4096.0f);
+
   char oled_buf[100];
 
 
 
 
   /* 光敏  */
+  /* 熱敏  */
+
+  /* ADC彙整 */
   /* TTL  */
   char uart_buf[100];
- sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
+ sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)light_adc,voltage_mV_light/1000,(voltage_mV_light%1000)/10);
  // UART_SendString(uart_buf); //光敏回傳電腦
 
  uint8_t received_byte;
@@ -616,7 +638,7 @@ pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
    char temp[50];
 
    sprintf(oled_buf,"Roll: %7.2f\nPitch: %7.2f\r\n",roll,pitch);
-   sprintf(temp,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
+   sprintf(temp,"L:%4d %d.%02dV \n",(int)light_adc,voltage_mV_light/1000,(voltage_mV_light%1000)/10);
    strcat(oled_buf, temp);
    OLED_Clear();
    OLED_WriteString(oled_buf);

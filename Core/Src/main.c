@@ -249,29 +249,47 @@ void OLED_WriteString(char *str)
 
     while (*str)
     {
-        // 只處理 ASCII 32~127
-        if (*str < 32 || *str > 127)
+        if (*str=='\n')  // ASCII 碼 10
+            {
+                x = 0;          // X 回到最左邊
+                y++;            // Y 往下移一行（頁面 +1）
+
+                if (y>7)      // 超過最後一頁（第 7 頁）
+                {
+                    break;      // 寫滿了就停止（或你可以改成從頭覆蓋）
+                }
+
+                // 把硬體游標移動到新的 (x, y) 位置
+                OLED_WriteCmd(0xB0+y);           // 設定頁面
+                OLED_WriteCmd(0x00+(x&0x0F));  // 設定低 4 位列位址
+                OLED_WriteCmd(0x10+((x>>4)&0x0F)); // 設定高 4 位列位址
+
+                str++;  // 跳過 \n，繼續處理下一個字元
+                continue;  // 回到 while 開頭
+            }
+    	// 只處理 ASCII 32~127
+        if (*str<32||*str>127)
         {
             str++;
             continue;
         }
 
         // 設定游標位置（頁面 y，列 x）
-        OLED_WriteCmd(0xB0 + y);
-        OLED_WriteCmd(0x00 + (x & 0x0F));
-        OLED_WriteCmd(0x10 + ((x >> 4) & 0x0F));
+        OLED_WriteCmd(0xB0+y);
+        OLED_WriteCmd(0x00+(x&0x0F));
+        OLED_WriteCmd(0x10+((x>>4)&0x0F));
 
         // 取得字型點陣（5 個位元組）
-        const uint8_t *glyph = Font5x7[*str - 32];
+        const uint8_t *glyph=Font5x7[*str-32];
         // 寫入顯存（連續 5 個位元組）
-        HAL_I2C_Mem_Write(&hi2c1, oled_addr << 1, 0x40, 1, (uint8_t*)glyph, 5, 100);
+        HAL_I2C_Mem_Write(&hi2c1,oled_addr<<1,0x40,1,(uint8_t*)glyph,5,100);
 
         x += 6;  // 每個字元佔 6 像素寬（5 點陣 + 1 間隔）
-        if (x > 128 - 6)  // 超過寬度就換行
+        if (x>128 - 6)  // 超過寬度就換行
         {
-            x = 0;
+            x=0;
             y++;
-            if (y > 7) break;  // 超過頁面就停止
+            if (y>7) break;  // 超過頁面就停止
         }
         str++;
     }
@@ -597,7 +615,7 @@ pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
    // 把 roll 和 pitch 拆成「整數部分」和「小數部分」
    char temp[50];
 
-   sprintf(oled_buf,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
+   sprintf(oled_buf,"Roll: %7.2f\nPitch: %7.2f\r\n",roll,pitch);
    sprintf(temp,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
    strcat(oled_buf, temp);
    OLED_Clear();

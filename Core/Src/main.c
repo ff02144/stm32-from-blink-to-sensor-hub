@@ -495,7 +495,7 @@ int main(void)
 /* 光敏  */
   uint32_t adc_val=ADC_Read();
   uint16_t voltage_mV =(uint16_t)(adc_val*3300.0f/4096.0f);
-  char oled_buf[20];
+  char oled_buf[100];
 
   sprintf(oled_buf,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
 
@@ -504,7 +504,7 @@ int main(void)
   OLED_WriteString(oled_buf);
   /* 光敏  */
   /* TTL  */
-  char uart_buf[50];
+  char uart_buf[100];
  sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
  // UART_SendString(uart_buf); //光敏回傳電腦
 
@@ -568,7 +568,7 @@ pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
    sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
    UART_SendString(msg);
 
-   HAL_Delay(10);
+   HAL_Delay(50);
   /*   MPU6050互補濾波   */
   /*   MPU6050   */
   }

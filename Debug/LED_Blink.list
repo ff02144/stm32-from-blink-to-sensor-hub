@@ -2042,7 +2042,7 @@ void MPU6050_ReadGyro(int16_t *gx, int16_t *gy, int16_t *gz)
 int main(void)
 {
  8001480:	b5f0      	push	{r4, r5, r6, r7, lr}
- 8001482:	b0cb      	sub	sp, #300	@ 0x12c
+ 8001482:	b0eb      	sub	sp, #428	@ 0x1ac
  8001484:	af04      	add	r7, sp, #16
 
 
@@ -2067,7 +2067,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   if (oled_addr != 0xFF)
- 800149a:	4b9e      	ldr	r3, [pc, #632]	@ (8001714 <main+0x294>)
+ 800149a:	4b9f      	ldr	r3, [pc, #636]	@ (8001718 <main+0x298>)
  800149c:	781b      	ldrb	r3, [r3, #0]
  800149e:	2bff      	cmp	r3, #255	@ 0xff
  80014a0:	d037      	beq.n	8001512 <main+0x92>
@@ -2080,7 +2080,7 @@ int main(void)
    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
  80014a6:	2200      	movs	r2, #0
  80014a8:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
- 80014ac:	489a      	ldr	r0, [pc, #616]	@ (8001718 <main+0x298>)
+ 80014ac:	489b      	ldr	r0, [pc, #620]	@ (800171c <main+0x29c>)
  80014ae:	f001 fde5 	bl	800307c <HAL_GPIO_WritePin>
         HAL_Delay(100);
  80014b2:	2064      	movs	r0, #100	@ 0x64
@@ -2088,7 +2088,7 @@ int main(void)
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
  80014b8:	2201      	movs	r2, #1
  80014ba:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
- 80014be:	4896      	ldr	r0, [pc, #600]	@ (8001718 <main+0x298>)
+ 80014be:	4897      	ldr	r0, [pc, #604]	@ (800171c <main+0x29c>)
  80014c0:	f001 fddc 	bl	800307c <HAL_GPIO_WritePin>
         HAL_Delay(100);
  80014c4:	2064      	movs	r0, #100	@ 0x64
@@ -2096,7 +2096,7 @@ int main(void)
       HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
  80014ca:	2200      	movs	r2, #0
  80014cc:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
- 80014d0:	4891      	ldr	r0, [pc, #580]	@ (8001718 <main+0x298>)
+ 80014d0:	4892      	ldr	r0, [pc, #584]	@ (800171c <main+0x29c>)
  80014d2:	f001 fdd3 	bl	800307c <HAL_GPIO_WritePin>
         HAL_Delay(100);
  80014d6:	2064      	movs	r0, #100	@ 0x64
@@ -2104,13 +2104,13 @@ int main(void)
    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
  80014dc:	2201      	movs	r2, #1
  80014de:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
- 80014e2:	488d      	ldr	r0, [pc, #564]	@ (8001718 <main+0x298>)
+ 80014e2:	488e      	ldr	r0, [pc, #568]	@ (800171c <main+0x29c>)
  80014e4:	f001 fdca 	bl	800307c <HAL_GPIO_WritePin>
 
         // ★ 清除後閃3下代表清除完成
         for (int i=0; i<3; i++)
  80014e8:	2300      	movs	r3, #0
- 80014ea:	f8c7 3114 	str.w	r3, [r7, #276]	@ 0x114
+ 80014ea:	f8c7 3194 	str.w	r3, [r7, #404]	@ 0x194
  80014ee:	e00a      	b.n	8001506 <main+0x86>
         {
       //      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
@@ -2122,10 +2122,10 @@ int main(void)
  80014f6:	20c8      	movs	r0, #200	@ 0xc8
  80014f8:	f000 fe4e 	bl	8002198 <HAL_Delay>
         for (int i=0; i<3; i++)
- 80014fc:	f8d7 3114 	ldr.w	r3, [r7, #276]	@ 0x114
+ 80014fc:	f8d7 3194 	ldr.w	r3, [r7, #404]	@ 0x194
  8001500:	3301      	adds	r3, #1
- 8001502:	f8c7 3114 	str.w	r3, [r7, #276]	@ 0x114
- 8001506:	f8d7 3114 	ldr.w	r3, [r7, #276]	@ 0x114
+ 8001502:	f8c7 3194 	str.w	r3, [r7, #404]	@ 0x194
+ 8001506:	f8d7 3194 	ldr.w	r3, [r7, #404]	@ 0x194
  800150a:	2b02      	cmp	r3, #2
  800150c:	ddf0      	ble.n	80014f0 <main+0x70>
         }
@@ -2137,10 +2137,10 @@ int main(void)
 
 
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);   // 啟用接收中斷
- 8001512:	4b82      	ldr	r3, [pc, #520]	@ (800171c <main+0x29c>)
+ 8001512:	4b83      	ldr	r3, [pc, #524]	@ (8001720 <main+0x2a0>)
  8001514:	681b      	ldr	r3, [r3, #0]
  8001516:	68da      	ldr	r2, [r3, #12]
- 8001518:	4b80      	ldr	r3, [pc, #512]	@ (800171c <main+0x29c>)
+ 8001518:	4b81      	ldr	r3, [pc, #516]	@ (8001720 <main+0x2a0>)
  800151a:	681b      	ldr	r3, [r3, #0]
  800151c:	f042 0220 	orr.w	r2, r2, #32
  8001520:	60da      	str	r2, [r3, #12]
@@ -2154,51 +2154,51 @@ int main(void)
  800152e:	f001 fb47 	bl	8002bc0 <HAL_NVIC_EnableIRQ>
   HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);   // 啟動接收
  8001532:	2201      	movs	r2, #1
- 8001534:	497a      	ldr	r1, [pc, #488]	@ (8001720 <main+0x2a0>)
- 8001536:	4879      	ldr	r0, [pc, #484]	@ (800171c <main+0x29c>)
+ 8001534:	497b      	ldr	r1, [pc, #492]	@ (8001724 <main+0x2a4>)
+ 8001536:	487a      	ldr	r0, [pc, #488]	@ (8001720 <main+0x2a0>)
  8001538:	f003 fdf2 	bl	8005120 <HAL_UART_Receive_IT>
 
 
   // ===  I2C 掃描器（UART 版） ===
   char scan_msg[50];
   UART_SendString("\r\n=== I2C Scanner Start ===\r\n");
- 800153c:	4879      	ldr	r0, [pc, #484]	@ (8001724 <main+0x2a4>)
+ 800153c:	487a      	ldr	r0, [pc, #488]	@ (8001728 <main+0x2a8>)
  800153e:	f7ff feb1 	bl	80012a4 <UART_SendString>
 
   for (uint8_t addr=0x08;addr<=0x77;addr++)
  8001542:	2308      	movs	r3, #8
- 8001544:	f887 3113 	strb.w	r3, [r7, #275]	@ 0x113
+ 8001544:	f887 3193 	strb.w	r3, [r7, #403]	@ 0x193
  8001548:	e01e      	b.n	8001588 <main+0x108>
   {
       // HAL 的地址要左移 1 位（7-bit 轉 8-bit）
       if (HAL_I2C_IsDeviceReady(&hi2c1,(addr<<1),1,100)==HAL_OK)
- 800154a:	f897 3113 	ldrb.w	r3, [r7, #275]	@ 0x113
+ 800154a:	f897 3193 	ldrb.w	r3, [r7, #403]	@ 0x193
  800154e:	b29b      	uxth	r3, r3
  8001550:	005b      	lsls	r3, r3, #1
  8001552:	b299      	uxth	r1, r3
  8001554:	2364      	movs	r3, #100	@ 0x64
  8001556:	2201      	movs	r2, #1
- 8001558:	4873      	ldr	r0, [pc, #460]	@ (8001728 <main+0x2a8>)
+ 8001558:	4874      	ldr	r0, [pc, #464]	@ (800172c <main+0x2ac>)
  800155a:	f002 fa73 	bl	8003a44 <HAL_I2C_IsDeviceReady>
  800155e:	4603      	mov	r3, r0
  8001560:	2b00      	cmp	r3, #0
  8001562:	d10c      	bne.n	800157e <main+0xfe>
       {
           sprintf(scan_msg,"Device found at 0x%02X\r\n",addr);
- 8001564:	f897 2113 	ldrb.w	r2, [r7, #275]	@ 0x113
- 8001568:	f107 03ac 	add.w	r3, r7, #172	@ 0xac
- 800156c:	496f      	ldr	r1, [pc, #444]	@ (800172c <main+0x2ac>)
+ 8001564:	f897 2193 	ldrb.w	r2, [r7, #403]	@ 0x193
+ 8001568:	f507 7396 	add.w	r3, r7, #300	@ 0x12c
+ 800156c:	4970      	ldr	r1, [pc, #448]	@ (8001730 <main+0x2b0>)
  800156e:	4618      	mov	r0, r3
  8001570:	f005 f926 	bl	80067c0 <siprintf>
           UART_SendString(scan_msg);
- 8001574:	f107 03ac 	add.w	r3, r7, #172	@ 0xac
+ 8001574:	f507 7396 	add.w	r3, r7, #300	@ 0x12c
  8001578:	4618      	mov	r0, r3
  800157a:	f7ff fe93 	bl	80012a4 <UART_SendString>
   for (uint8_t addr=0x08;addr<=0x77;addr++)
- 800157e:	f897 3113 	ldrb.w	r3, [r7, #275]	@ 0x113
+ 800157e:	f897 3193 	ldrb.w	r3, [r7, #403]	@ 0x193
  8001582:	3301      	adds	r3, #1
- 8001584:	f887 3113 	strb.w	r3, [r7, #275]	@ 0x113
- 8001588:	f897 3113 	ldrb.w	r3, [r7, #275]	@ 0x113
+ 8001584:	f887 3193 	strb.w	r3, [r7, #403]	@ 0x193
+ 8001588:	f897 3193 	ldrb.w	r3, [r7, #403]	@ 0x193
  800158c:	2b77      	cmp	r3, #119	@ 0x77
  800158e:	d9dc      	bls.n	800154a <main+0xca>
       }
@@ -2208,40 +2208,40 @@ int main(void)
 
   uint8_t who_am_i = 0;
  8001590:	2300      	movs	r3, #0
- 8001592:	f887 30ab 	strb.w	r3, [r7, #171]	@ 0xab
+ 8001592:	f887 312b 	strb.w	r3, [r7, #299]	@ 0x12b
 
   HAL_I2C_Mem_Read(&hi2c1, 0x68 << 1, 0x75, I2C_MEMADD_SIZE_8BIT, &who_am_i, 1, 100);
  8001596:	2364      	movs	r3, #100	@ 0x64
  8001598:	9302      	str	r3, [sp, #8]
  800159a:	2301      	movs	r3, #1
  800159c:	9301      	str	r3, [sp, #4]
- 800159e:	f107 03ab 	add.w	r3, r7, #171	@ 0xab
+ 800159e:	f207 132b 	addw	r3, r7, #299	@ 0x12b
  80015a2:	9300      	str	r3, [sp, #0]
  80015a4:	2301      	movs	r3, #1
  80015a6:	2275      	movs	r2, #117	@ 0x75
  80015a8:	21d0      	movs	r1, #208	@ 0xd0
- 80015aa:	485f      	ldr	r0, [pc, #380]	@ (8001728 <main+0x2a8>)
+ 80015aa:	4860      	ldr	r0, [pc, #384]	@ (800172c <main+0x2ac>)
  80015ac:	f001 ffd6 	bl	800355c <HAL_I2C_Mem_Read>
 
   sprintf(scan_msg, "WHO_AM_I = 0x%02X\r\n", who_am_i);
- 80015b0:	f897 30ab 	ldrb.w	r3, [r7, #171]	@ 0xab
+ 80015b0:	f897 312b 	ldrb.w	r3, [r7, #299]	@ 0x12b
  80015b4:	461a      	mov	r2, r3
- 80015b6:	f107 03ac 	add.w	r3, r7, #172	@ 0xac
- 80015ba:	495d      	ldr	r1, [pc, #372]	@ (8001730 <main+0x2b0>)
+ 80015b6:	f507 7396 	add.w	r3, r7, #300	@ 0x12c
+ 80015ba:	495e      	ldr	r1, [pc, #376]	@ (8001734 <main+0x2b4>)
  80015bc:	4618      	mov	r0, r3
  80015be:	f005 f8ff 	bl	80067c0 <siprintf>
   UART_SendString(scan_msg);
- 80015c2:	f107 03ac 	add.w	r3, r7, #172	@ 0xac
+ 80015c2:	f507 7396 	add.w	r3, r7, #300	@ 0x12c
  80015c6:	4618      	mov	r0, r3
  80015c8:	f7ff fe6c 	bl	80012a4 <UART_SendString>
 
   if (who_am_i == 0x68)
- 80015cc:	f897 30ab 	ldrb.w	r3, [r7, #171]	@ 0xab
+ 80015cc:	f897 312b 	ldrb.w	r3, [r7, #299]	@ 0x12b
  80015d0:	2b68      	cmp	r3, #104	@ 0x68
  80015d2:	d124      	bne.n	800161e <main+0x19e>
   {
       UART_SendString("MPU6050 found! (WHO_AM_I correct)\r\n");
- 80015d4:	4857      	ldr	r0, [pc, #348]	@ (8001734 <main+0x2b4>)
+ 80015d4:	4858      	ldr	r0, [pc, #352]	@ (8001738 <main+0x2b8>)
  80015d6:	f7ff fe65 	bl	80012a4 <UART_SendString>
 
       //  加入延遲，讓晶片穩定
@@ -2252,37 +2252,37 @@ int main(void)
       // 喚醒 MPU6050
       uint8_t wake_cmd = 0x00;
  80015e0:	2300      	movs	r3, #0
- 80015e2:	f887 30aa 	strb.w	r3, [r7, #170]	@ 0xaa
+ 80015e2:	f887 312a 	strb.w	r3, [r7, #298]	@ 0x12a
       HAL_StatusTypeDef status = HAL_I2C_Mem_Write(&hi2c1, 0x68 << 1, 0x6B, I2C_MEMADD_SIZE_8BIT, &wake_cmd, 1, 100);
  80015e6:	2364      	movs	r3, #100	@ 0x64
  80015e8:	9302      	str	r3, [sp, #8]
  80015ea:	2301      	movs	r3, #1
  80015ec:	9301      	str	r3, [sp, #4]
- 80015ee:	f107 03aa 	add.w	r3, r7, #170	@ 0xaa
+ 80015ee:	f507 7395 	add.w	r3, r7, #298	@ 0x12a
  80015f2:	9300      	str	r3, [sp, #0]
  80015f4:	2301      	movs	r3, #1
  80015f6:	226b      	movs	r2, #107	@ 0x6b
  80015f8:	21d0      	movs	r1, #208	@ 0xd0
- 80015fa:	484b      	ldr	r0, [pc, #300]	@ (8001728 <main+0x2a8>)
+ 80015fa:	484c      	ldr	r0, [pc, #304]	@ (800172c <main+0x2ac>)
  80015fc:	f001 feb4 	bl	8003368 <HAL_I2C_Mem_Write>
  8001600:	4603      	mov	r3, r0
- 8001602:	f887 310b 	strb.w	r3, [r7, #267]	@ 0x10b
+ 8001602:	f887 318b 	strb.w	r3, [r7, #395]	@ 0x18b
 
       // 檢查寫入是否成功
       if (status == HAL_OK)
- 8001606:	f897 310b 	ldrb.w	r3, [r7, #267]	@ 0x10b
+ 8001606:	f897 318b 	ldrb.w	r3, [r7, #395]	@ 0x18b
  800160a:	2b00      	cmp	r3, #0
  800160c:	d103      	bne.n	8001616 <main+0x196>
       {
           UART_SendString("MPU6050 woken up! (write success)\r\n");
- 800160e:	484a      	ldr	r0, [pc, #296]	@ (8001738 <main+0x2b8>)
+ 800160e:	484b      	ldr	r0, [pc, #300]	@ (800173c <main+0x2bc>)
  8001610:	f7ff fe48 	bl	80012a4 <UART_SendString>
  8001614:	e006      	b.n	8001624 <main+0x1a4>
       }
       else
       {
           UART_SendString("MPU6050 wake up FAILED! (I2C error)\r\n");
- 8001616:	4849      	ldr	r0, [pc, #292]	@ (800173c <main+0x2bc>)
+ 8001616:	484a      	ldr	r0, [pc, #296]	@ (8001740 <main+0x2c0>)
  8001618:	f7ff fe44 	bl	80012a4 <UART_SendString>
  800161c:	e002      	b.n	8001624 <main+0x1a4>
       }
@@ -2290,13 +2290,13 @@ int main(void)
   else
   {
       UART_SendString("MPU6050 NOT found! (WHO_AM_I error)\r\n");
- 800161e:	4848      	ldr	r0, [pc, #288]	@ (8001740 <main+0x2c0>)
+ 800161e:	4849      	ldr	r0, [pc, #292]	@ (8001744 <main+0x2c4>)
  8001620:	f7ff fe40 	bl	80012a4 <UART_SendString>
   }
 // ===  讀取who am I 喚醒 MPU6050結束===
   // === 2. 原本的 OLED 初始化 ===
   if (oled_addr != 0xFF)
- 8001624:	4b3b      	ldr	r3, [pc, #236]	@ (8001714 <main+0x294>)
+ 8001624:	4b3c      	ldr	r3, [pc, #240]	@ (8001718 <main+0x298>)
  8001626:	781b      	ldrb	r3, [r3, #0]
  8001628:	2bff      	cmp	r3, #255	@ 0xff
  800162a:	d001      	beq.n	8001630 <main+0x1b0>
@@ -2310,12 +2310,12 @@ int main(void)
 /* 光敏  */
   uint32_t adc_val=ADC_Read();
  8001630:	f7ff fe22 	bl	8001278 <ADC_Read>
- 8001634:	f8c7 0104 	str.w	r0, [r7, #260]	@ 0x104
+ 8001634:	f8c7 0184 	str.w	r0, [r7, #388]	@ 0x184
   uint16_t voltage_mV =(uint16_t)(adc_val*3300.0f/4096.0f);
- 8001638:	f8d7 0104 	ldr.w	r0, [r7, #260]	@ 0x104
+ 8001638:	f8d7 0184 	ldr.w	r0, [r7, #388]	@ 0x184
  800163c:	f7ff fb2a 	bl	8000c94 <__aeabi_ui2f>
  8001640:	4603      	mov	r3, r0
- 8001642:	4940      	ldr	r1, [pc, #256]	@ (8001744 <main+0x2c4>)
+ 8001642:	4941      	ldr	r1, [pc, #260]	@ (8001748 <main+0x2c8>)
  8001644:	4618      	mov	r0, r3
  8001646:	f7ff fb7d 	bl	8000d44 <__aeabi_fmul>
  800164a:	4603      	mov	r3, r0
@@ -2326,394 +2326,395 @@ int main(void)
  8001658:	4618      	mov	r0, r3
  800165a:	f7ff fcc3 	bl	8000fe4 <__aeabi_f2uiz>
  800165e:	4603      	mov	r3, r0
- 8001660:	f8a7 3102 	strh.w	r3, [r7, #258]	@ 0x102
-  char oled_buf[20];
+ 8001660:	f8a7 3182 	strh.w	r3, [r7, #386]	@ 0x182
+  char oled_buf[100];
 
   sprintf(oled_buf,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
- 8001664:	f8d7 1104 	ldr.w	r1, [r7, #260]	@ 0x104
- 8001668:	f8b7 3102 	ldrh.w	r3, [r7, #258]	@ 0x102
- 800166c:	4a36      	ldr	r2, [pc, #216]	@ (8001748 <main+0x2c8>)
+ 8001664:	f8d7 1184 	ldr.w	r1, [r7, #388]	@ 0x184
+ 8001668:	f8b7 3182 	ldrh.w	r3, [r7, #386]	@ 0x182
+ 800166c:	4a37      	ldr	r2, [pc, #220]	@ (800174c <main+0x2cc>)
  800166e:	fba2 2303 	umull	r2, r3, r2, r3
  8001672:	099b      	lsrs	r3, r3, #6
  8001674:	b29b      	uxth	r3, r3
  8001676:	461c      	mov	r4, r3
- 8001678:	f8b7 3102 	ldrh.w	r3, [r7, #258]	@ 0x102
- 800167c:	4a32      	ldr	r2, [pc, #200]	@ (8001748 <main+0x2c8>)
+ 8001678:	f8b7 3182 	ldrh.w	r3, [r7, #386]	@ 0x182
+ 800167c:	4a33      	ldr	r2, [pc, #204]	@ (800174c <main+0x2cc>)
  800167e:	fba2 0203 	umull	r0, r2, r2, r3
  8001682:	0992      	lsrs	r2, r2, #6
  8001684:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
  8001688:	fb00 f202 	mul.w	r2, r0, r2
  800168c:	1a9b      	subs	r3, r3, r2
  800168e:	b29b      	uxth	r3, r3
- 8001690:	4a2e      	ldr	r2, [pc, #184]	@ (800174c <main+0x2cc>)
+ 8001690:	4a2f      	ldr	r2, [pc, #188]	@ (8001750 <main+0x2d0>)
  8001692:	fba2 2303 	umull	r2, r3, r2, r3
  8001696:	08db      	lsrs	r3, r3, #3
  8001698:	b29b      	uxth	r3, r3
- 800169a:	f107 0094 	add.w	r0, r7, #148	@ 0x94
+ 800169a:	f107 0054 	add.w	r0, r7, #84	@ 0x54
  800169e:	9300      	str	r3, [sp, #0]
  80016a0:	4623      	mov	r3, r4
  80016a2:	460a      	mov	r2, r1
- 80016a4:	492a      	ldr	r1, [pc, #168]	@ (8001750 <main+0x2d0>)
+ 80016a4:	492b      	ldr	r1, [pc, #172]	@ (8001754 <main+0x2d4>)
  80016a6:	f005 f88b 	bl	80067c0 <siprintf>
 
 
   OLED_Clear();
  80016aa:	f7ff fd2d 	bl	8001108 <OLED_Clear>
   OLED_WriteString(oled_buf);
- 80016ae:	f107 0394 	add.w	r3, r7, #148	@ 0x94
+ 80016ae:	f107 0354 	add.w	r3, r7, #84	@ 0x54
  80016b2:	4618      	mov	r0, r3
  80016b4:	f7ff fd7a 	bl	80011ac <OLED_WriteString>
   /* 光敏  */
   /* TTL  */
-  char uart_buf[50];
+  char uart_buf[100];
  sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
- 80016b8:	f8d7 1104 	ldr.w	r1, [r7, #260]	@ 0x104
- 80016bc:	f8b7 3102 	ldrh.w	r3, [r7, #258]	@ 0x102
- 80016c0:	4a21      	ldr	r2, [pc, #132]	@ (8001748 <main+0x2c8>)
+ 80016b8:	f8d7 1184 	ldr.w	r1, [r7, #388]	@ 0x184
+ 80016bc:	f8b7 3182 	ldrh.w	r3, [r7, #386]	@ 0x182
+ 80016c0:	4a22      	ldr	r2, [pc, #136]	@ (800174c <main+0x2cc>)
  80016c2:	fba2 2303 	umull	r2, r3, r2, r3
  80016c6:	099b      	lsrs	r3, r3, #6
  80016c8:	b29b      	uxth	r3, r3
  80016ca:	461c      	mov	r4, r3
- 80016cc:	f8b7 3102 	ldrh.w	r3, [r7, #258]	@ 0x102
- 80016d0:	4a1d      	ldr	r2, [pc, #116]	@ (8001748 <main+0x2c8>)
+ 80016cc:	f8b7 3182 	ldrh.w	r3, [r7, #386]	@ 0x182
+ 80016d0:	4a1e      	ldr	r2, [pc, #120]	@ (800174c <main+0x2cc>)
  80016d2:	fba2 0203 	umull	r0, r2, r2, r3
  80016d6:	0992      	lsrs	r2, r2, #6
  80016d8:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
  80016dc:	fb00 f202 	mul.w	r2, r0, r2
  80016e0:	1a9b      	subs	r3, r3, r2
  80016e2:	b29b      	uxth	r3, r3
- 80016e4:	4a19      	ldr	r2, [pc, #100]	@ (800174c <main+0x2cc>)
+ 80016e4:	4a1a      	ldr	r2, [pc, #104]	@ (8001750 <main+0x2d0>)
  80016e6:	fba2 2303 	umull	r2, r3, r2, r3
  80016ea:	08db      	lsrs	r3, r3, #3
  80016ec:	b29b      	uxth	r3, r3
- 80016ee:	4638      	mov	r0, r7
- 80016f0:	9300      	str	r3, [sp, #0]
- 80016f2:	4623      	mov	r3, r4
- 80016f4:	460a      	mov	r2, r1
- 80016f6:	4917      	ldr	r1, [pc, #92]	@ (8001754 <main+0x2d4>)
- 80016f8:	f005 f862 	bl	80067c0 <siprintf>
+ 80016ee:	f107 00b8 	add.w	r0, r7, #184	@ 0xb8
+ 80016f2:	9300      	str	r3, [sp, #0]
+ 80016f4:	4623      	mov	r3, r4
+ 80016f6:	460a      	mov	r2, r1
+ 80016f8:	4917      	ldr	r1, [pc, #92]	@ (8001758 <main+0x2d8>)
+ 80016fa:	f005 f861 	bl	80067c0 <siprintf>
  // UART_SendString(uart_buf); //光敏回傳電腦
 
  uint8_t received_byte;
    if (RB_Pop(&received_byte))
- 80016fc:	f107 0393 	add.w	r3, r7, #147	@ 0x93
- 8001700:	4618      	mov	r0, r3
- 8001702:	f7ff fe1b 	bl	800133c <RB_Pop>
- 8001706:	4603      	mov	r3, r0
- 8001708:	2b00      	cmp	r3, #0
- 800170a:	d03d      	beq.n	8001788 <main+0x308>
+ 80016fe:	f207 1329 	addw	r3, r7, #297	@ 0x129
+ 8001702:	4618      	mov	r0, r3
+ 8001704:	f7ff fe1a 	bl	800133c <RB_Pop>
+ 8001708:	4603      	mov	r3, r0
+ 800170a:	2b00      	cmp	r3, #0
+ 800170c:	d03e      	beq.n	800178c <main+0x30c>
    {
        // ★ 加入這 4 行：成功取出資料時，LED 閃爍 2 下
        for (int i = 0; i < 2; i++)
- 800170c:	2300      	movs	r3, #0
- 800170e:	f8c7 310c 	str.w	r3, [r7, #268]	@ 0x10c
- 8001712:	e02e      	b.n	8001772 <main+0x2f2>
- 8001714:	20000000 	.word	0x20000000
- 8001718:	40011000 	.word	0x40011000
- 800171c:	20000278 	.word	0x20000278
- 8001720:	20000306 	.word	0x20000306
- 8001724:	08009198 	.word	0x08009198
- 8001728:	20000224 	.word	0x20000224
- 800172c:	080091b8 	.word	0x080091b8
- 8001730:	080091d4 	.word	0x080091d4
- 8001734:	080091e8 	.word	0x080091e8
- 8001738:	0800920c 	.word	0x0800920c
- 800173c:	08009230 	.word	0x08009230
- 8001740:	08009258 	.word	0x08009258
- 8001744:	454e4000 	.word	0x454e4000
- 8001748:	10624dd3 	.word	0x10624dd3
- 800174c:	cccccccd 	.word	0xcccccccd
- 8001750:	08009280 	.word	0x08009280
- 8001754:	08009294 	.word	0x08009294
+ 800170e:	2300      	movs	r3, #0
+ 8001710:	f8c7 318c 	str.w	r3, [r7, #396]	@ 0x18c
+ 8001714:	e02f      	b.n	8001776 <main+0x2f6>
+ 8001716:	bf00      	nop
+ 8001718:	20000000 	.word	0x20000000
+ 800171c:	40011000 	.word	0x40011000
+ 8001720:	20000278 	.word	0x20000278
+ 8001724:	20000306 	.word	0x20000306
+ 8001728:	08009198 	.word	0x08009198
+ 800172c:	20000224 	.word	0x20000224
+ 8001730:	080091b8 	.word	0x080091b8
+ 8001734:	080091d4 	.word	0x080091d4
+ 8001738:	080091e8 	.word	0x080091e8
+ 800173c:	0800920c 	.word	0x0800920c
+ 8001740:	08009230 	.word	0x08009230
+ 8001744:	08009258 	.word	0x08009258
+ 8001748:	454e4000 	.word	0x454e4000
+ 800174c:	10624dd3 	.word	0x10624dd3
+ 8001750:	cccccccd 	.word	0xcccccccd
+ 8001754:	08009280 	.word	0x08009280
+ 8001758:	08009294 	.word	0x08009294
        {
            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
- 8001758:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
- 800175c:	48aa      	ldr	r0, [pc, #680]	@ (8001a08 <main+0x588>)
- 800175e:	f001 fca5 	bl	80030ac <HAL_GPIO_TogglePin>
+ 800175c:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
+ 8001760:	48a9      	ldr	r0, [pc, #676]	@ (8001a08 <main+0x588>)
+ 8001762:	f001 fca3 	bl	80030ac <HAL_GPIO_TogglePin>
            HAL_Delay(100);
- 8001762:	2064      	movs	r0, #100	@ 0x64
- 8001764:	f000 fd18 	bl	8002198 <HAL_Delay>
+ 8001766:	2064      	movs	r0, #100	@ 0x64
+ 8001768:	f000 fd16 	bl	8002198 <HAL_Delay>
        for (int i = 0; i < 2; i++)
- 8001768:	f8d7 310c 	ldr.w	r3, [r7, #268]	@ 0x10c
- 800176c:	3301      	adds	r3, #1
- 800176e:	f8c7 310c 	str.w	r3, [r7, #268]	@ 0x10c
- 8001772:	f8d7 310c 	ldr.w	r3, [r7, #268]	@ 0x10c
- 8001776:	2b01      	cmp	r3, #1
- 8001778:	ddee      	ble.n	8001758 <main+0x2d8>
+ 800176c:	f8d7 318c 	ldr.w	r3, [r7, #396]	@ 0x18c
+ 8001770:	3301      	adds	r3, #1
+ 8001772:	f8c7 318c 	str.w	r3, [r7, #396]	@ 0x18c
+ 8001776:	f8d7 318c 	ldr.w	r3, [r7, #396]	@ 0x18c
+ 800177a:	2b01      	cmp	r3, #1
+ 800177c:	ddee      	ble.n	800175c <main+0x2dc>
        }
 
        // 把資料傳回去（Echo）
        HAL_UART_Transmit(&huart1, &received_byte, 1, 100);
- 800177a:	f107 0193 	add.w	r1, r7, #147	@ 0x93
- 800177e:	2364      	movs	r3, #100	@ 0x64
- 8001780:	2201      	movs	r2, #1
- 8001782:	48a2      	ldr	r0, [pc, #648]	@ (8001a0c <main+0x58c>)
- 8001784:	f003 fc0c 	bl	8004fa0 <HAL_UART_Transmit>
+ 800177e:	f207 1129 	addw	r1, r7, #297	@ 0x129
+ 8001782:	2364      	movs	r3, #100	@ 0x64
+ 8001784:	2201      	movs	r2, #1
+ 8001786:	48a1      	ldr	r0, [pc, #644]	@ (8001a0c <main+0x58c>)
+ 8001788:	f003 fc0a 	bl	8004fa0 <HAL_UART_Transmit>
    }
    /* TTL  */
    /*   MPU6050   */
    int16_t ax,ay,az,gx,gy,gz;
 
    MPU6050_ReadAccel(&ax,&ay,&az);
- 8001788:	f107 028c 	add.w	r2, r7, #140	@ 0x8c
- 800178c:	f107 018e 	add.w	r1, r7, #142	@ 0x8e
- 8001790:	f107 0390 	add.w	r3, r7, #144	@ 0x90
- 8001794:	4618      	mov	r0, r3
- 8001796:	f7ff fe03 	bl	80013a0 <MPU6050_ReadAccel>
+ 800178c:	f507 7291 	add.w	r2, r7, #290	@ 0x122
+ 8001790:	f507 7192 	add.w	r1, r7, #292	@ 0x124
+ 8001794:	f507 7393 	add.w	r3, r7, #294	@ 0x126
+ 8001798:	4618      	mov	r0, r3
+ 800179a:	f7ff fe01 	bl	80013a0 <MPU6050_ReadAccel>
    MPU6050_ReadGyro(&gx,&gy,&gz);
- 800179a:	f107 0286 	add.w	r2, r7, #134	@ 0x86
- 800179e:	f107 0188 	add.w	r1, r7, #136	@ 0x88
- 80017a2:	f107 038a 	add.w	r3, r7, #138	@ 0x8a
- 80017a6:	4618      	mov	r0, r3
- 80017a8:	f7ff fe32 	bl	8001410 <MPU6050_ReadGyro>
+ 800179e:	f507 728e 	add.w	r2, r7, #284	@ 0x11c
+ 80017a2:	f507 718f 	add.w	r1, r7, #286	@ 0x11e
+ 80017a6:	f507 7390 	add.w	r3, r7, #288	@ 0x120
+ 80017aa:	4618      	mov	r0, r3
+ 80017ac:	f7ff fe30 	bl	8001410 <MPU6050_ReadGyro>
   //讀取原始數據
 
 
 
   //換算
 float ax_g=ax/16384.0f;
- 80017ac:	f9b7 3090 	ldrsh.w	r3, [r7, #144]	@ 0x90
- 80017b0:	4618      	mov	r0, r3
- 80017b2:	f7ff fa73 	bl	8000c9c <__aeabi_i2f>
- 80017b6:	4603      	mov	r3, r0
- 80017b8:	f04f 418d 	mov.w	r1, #1182793728	@ 0x46800000
- 80017bc:	4618      	mov	r0, r3
- 80017be:	f7ff fb75 	bl	8000eac <__aeabi_fdiv>
- 80017c2:	4603      	mov	r3, r0
- 80017c4:	f8c7 30fc 	str.w	r3, [r7, #252]	@ 0xfc
+ 80017b0:	f9b7 3126 	ldrsh.w	r3, [r7, #294]	@ 0x126
+ 80017b4:	4618      	mov	r0, r3
+ 80017b6:	f7ff fa71 	bl	8000c9c <__aeabi_i2f>
+ 80017ba:	4603      	mov	r3, r0
+ 80017bc:	f04f 418d 	mov.w	r1, #1182793728	@ 0x46800000
+ 80017c0:	4618      	mov	r0, r3
+ 80017c2:	f7ff fb73 	bl	8000eac <__aeabi_fdiv>
+ 80017c6:	4603      	mov	r3, r0
+ 80017c8:	f8c7 317c 	str.w	r3, [r7, #380]	@ 0x17c
 float ay_g=ay/16384.0f;
- 80017c8:	f9b7 308e 	ldrsh.w	r3, [r7, #142]	@ 0x8e
- 80017cc:	4618      	mov	r0, r3
- 80017ce:	f7ff fa65 	bl	8000c9c <__aeabi_i2f>
- 80017d2:	4603      	mov	r3, r0
- 80017d4:	f04f 418d 	mov.w	r1, #1182793728	@ 0x46800000
- 80017d8:	4618      	mov	r0, r3
- 80017da:	f7ff fb67 	bl	8000eac <__aeabi_fdiv>
- 80017de:	4603      	mov	r3, r0
- 80017e0:	f8c7 30f8 	str.w	r3, [r7, #248]	@ 0xf8
+ 80017cc:	f9b7 3124 	ldrsh.w	r3, [r7, #292]	@ 0x124
+ 80017d0:	4618      	mov	r0, r3
+ 80017d2:	f7ff fa63 	bl	8000c9c <__aeabi_i2f>
+ 80017d6:	4603      	mov	r3, r0
+ 80017d8:	f04f 418d 	mov.w	r1, #1182793728	@ 0x46800000
+ 80017dc:	4618      	mov	r0, r3
+ 80017de:	f7ff fb65 	bl	8000eac <__aeabi_fdiv>
+ 80017e2:	4603      	mov	r3, r0
+ 80017e4:	f8c7 3178 	str.w	r3, [r7, #376]	@ 0x178
 float az_g=az/16384.0f;
- 80017e4:	f9b7 308c 	ldrsh.w	r3, [r7, #140]	@ 0x8c
- 80017e8:	4618      	mov	r0, r3
- 80017ea:	f7ff fa57 	bl	8000c9c <__aeabi_i2f>
- 80017ee:	4603      	mov	r3, r0
- 80017f0:	f04f 418d 	mov.w	r1, #1182793728	@ 0x46800000
- 80017f4:	4618      	mov	r0, r3
- 80017f6:	f7ff fb59 	bl	8000eac <__aeabi_fdiv>
- 80017fa:	4603      	mov	r3, r0
- 80017fc:	f8c7 30f4 	str.w	r3, [r7, #244]	@ 0xf4
+ 80017e8:	f9b7 3122 	ldrsh.w	r3, [r7, #290]	@ 0x122
+ 80017ec:	4618      	mov	r0, r3
+ 80017ee:	f7ff fa55 	bl	8000c9c <__aeabi_i2f>
+ 80017f2:	4603      	mov	r3, r0
+ 80017f4:	f04f 418d 	mov.w	r1, #1182793728	@ 0x46800000
+ 80017f8:	4618      	mov	r0, r3
+ 80017fa:	f7ff fb57 	bl	8000eac <__aeabi_fdiv>
+ 80017fe:	4603      	mov	r3, r0
+ 8001800:	f8c7 3174 	str.w	r3, [r7, #372]	@ 0x174
 
   //陀螺儀
 float gyro_x=gx/131.0f;
- 8001800:	f9b7 308a 	ldrsh.w	r3, [r7, #138]	@ 0x8a
- 8001804:	4618      	mov	r0, r3
- 8001806:	f7ff fa49 	bl	8000c9c <__aeabi_i2f>
- 800180a:	4603      	mov	r3, r0
- 800180c:	4980      	ldr	r1, [pc, #512]	@ (8001a10 <main+0x590>)
- 800180e:	4618      	mov	r0, r3
- 8001810:	f7ff fb4c 	bl	8000eac <__aeabi_fdiv>
- 8001814:	4603      	mov	r3, r0
- 8001816:	f8c7 30f0 	str.w	r3, [r7, #240]	@ 0xf0
+ 8001804:	f9b7 3120 	ldrsh.w	r3, [r7, #288]	@ 0x120
+ 8001808:	4618      	mov	r0, r3
+ 800180a:	f7ff fa47 	bl	8000c9c <__aeabi_i2f>
+ 800180e:	4603      	mov	r3, r0
+ 8001810:	497f      	ldr	r1, [pc, #508]	@ (8001a10 <main+0x590>)
+ 8001812:	4618      	mov	r0, r3
+ 8001814:	f7ff fb4a 	bl	8000eac <__aeabi_fdiv>
+ 8001818:	4603      	mov	r3, r0
+ 800181a:	f8c7 3170 	str.w	r3, [r7, #368]	@ 0x170
 float gyro_y=gy/131.0f;
- 800181a:	f9b7 3088 	ldrsh.w	r3, [r7, #136]	@ 0x88
- 800181e:	4618      	mov	r0, r3
- 8001820:	f7ff fa3c 	bl	8000c9c <__aeabi_i2f>
- 8001824:	4603      	mov	r3, r0
- 8001826:	497a      	ldr	r1, [pc, #488]	@ (8001a10 <main+0x590>)
- 8001828:	4618      	mov	r0, r3
- 800182a:	f7ff fb3f 	bl	8000eac <__aeabi_fdiv>
- 800182e:	4603      	mov	r3, r0
- 8001830:	f8c7 30ec 	str.w	r3, [r7, #236]	@ 0xec
+ 800181e:	f9b7 311e 	ldrsh.w	r3, [r7, #286]	@ 0x11e
+ 8001822:	4618      	mov	r0, r3
+ 8001824:	f7ff fa3a 	bl	8000c9c <__aeabi_i2f>
+ 8001828:	4603      	mov	r3, r0
+ 800182a:	4979      	ldr	r1, [pc, #484]	@ (8001a10 <main+0x590>)
+ 800182c:	4618      	mov	r0, r3
+ 800182e:	f7ff fb3d 	bl	8000eac <__aeabi_fdiv>
+ 8001832:	4603      	mov	r3, r0
+ 8001834:	f8c7 316c 	str.w	r3, [r7, #364]	@ 0x16c
 float gyro_z=gz/131.0f;
- 8001834:	f9b7 3086 	ldrsh.w	r3, [r7, #134]	@ 0x86
- 8001838:	4618      	mov	r0, r3
- 800183a:	f7ff fa2f 	bl	8000c9c <__aeabi_i2f>
- 800183e:	4603      	mov	r3, r0
- 8001840:	4973      	ldr	r1, [pc, #460]	@ (8001a10 <main+0x590>)
- 8001842:	4618      	mov	r0, r3
- 8001844:	f7ff fb32 	bl	8000eac <__aeabi_fdiv>
- 8001848:	4603      	mov	r3, r0
- 800184a:	f8c7 30e8 	str.w	r3, [r7, #232]	@ 0xe8
+ 8001838:	f9b7 311c 	ldrsh.w	r3, [r7, #284]	@ 0x11c
+ 800183c:	4618      	mov	r0, r3
+ 800183e:	f7ff fa2d 	bl	8000c9c <__aeabi_i2f>
+ 8001842:	4603      	mov	r3, r0
+ 8001844:	4972      	ldr	r1, [pc, #456]	@ (8001a10 <main+0x590>)
+ 8001846:	4618      	mov	r0, r3
+ 8001848:	f7ff fb30 	bl	8000eac <__aeabi_fdiv>
+ 800184c:	4603      	mov	r3, r0
+ 800184e:	f8c7 3168 	str.w	r3, [r7, #360]	@ 0x168
 (void)gyro_z;
 //加速度計算角度
 float accel_roll=atan2(ay_g,az_g)*180.0f/PI;
- 800184e:	f8d7 00f8 	ldr.w	r0, [r7, #248]	@ 0xf8
- 8001852:	f7fe fde9 	bl	8000428 <__aeabi_f2d>
- 8001856:	4604      	mov	r4, r0
- 8001858:	460d      	mov	r5, r1
- 800185a:	f8d7 00f4 	ldr.w	r0, [r7, #244]	@ 0xf4
- 800185e:	f7fe fde3 	bl	8000428 <__aeabi_f2d>
- 8001862:	4602      	mov	r2, r0
- 8001864:	460b      	mov	r3, r1
- 8001866:	4620      	mov	r0, r4
- 8001868:	4629      	mov	r1, r5
- 800186a:	f007 f8f5 	bl	8008a58 <atan2>
- 800186e:	f04f 0200 	mov.w	r2, #0
- 8001872:	4b68      	ldr	r3, [pc, #416]	@ (8001a14 <main+0x594>)
- 8001874:	f7fe fe30 	bl	80004d8 <__aeabi_dmul>
- 8001878:	4602      	mov	r2, r0
- 800187a:	460b      	mov	r3, r1
- 800187c:	4610      	mov	r0, r2
- 800187e:	4619      	mov	r1, r3
- 8001880:	a35f      	add	r3, pc, #380	@ (adr r3, 8001a00 <main+0x580>)
- 8001882:	e9d3 2300 	ldrd	r2, r3, [r3]
- 8001886:	f7fe ff51 	bl	800072c <__aeabi_ddiv>
- 800188a:	4602      	mov	r2, r0
- 800188c:	460b      	mov	r3, r1
- 800188e:	4610      	mov	r0, r2
- 8001890:	4619      	mov	r1, r3
- 8001892:	f7ff f8f9 	bl	8000a88 <__aeabi_d2f>
- 8001896:	4603      	mov	r3, r0
- 8001898:	f8c7 30e4 	str.w	r3, [r7, #228]	@ 0xe4
+ 8001852:	f8d7 0178 	ldr.w	r0, [r7, #376]	@ 0x178
+ 8001856:	f7fe fde7 	bl	8000428 <__aeabi_f2d>
+ 800185a:	4604      	mov	r4, r0
+ 800185c:	460d      	mov	r5, r1
+ 800185e:	f8d7 0174 	ldr.w	r0, [r7, #372]	@ 0x174
+ 8001862:	f7fe fde1 	bl	8000428 <__aeabi_f2d>
+ 8001866:	4602      	mov	r2, r0
+ 8001868:	460b      	mov	r3, r1
+ 800186a:	4620      	mov	r0, r4
+ 800186c:	4629      	mov	r1, r5
+ 800186e:	f007 f8f3 	bl	8008a58 <atan2>
+ 8001872:	f04f 0200 	mov.w	r2, #0
+ 8001876:	4b67      	ldr	r3, [pc, #412]	@ (8001a14 <main+0x594>)
+ 8001878:	f7fe fe2e 	bl	80004d8 <__aeabi_dmul>
+ 800187c:	4602      	mov	r2, r0
+ 800187e:	460b      	mov	r3, r1
+ 8001880:	4610      	mov	r0, r2
+ 8001882:	4619      	mov	r1, r3
+ 8001884:	a35e      	add	r3, pc, #376	@ (adr r3, 8001a00 <main+0x580>)
+ 8001886:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 800188a:	f7fe ff4f 	bl	800072c <__aeabi_ddiv>
+ 800188e:	4602      	mov	r2, r0
+ 8001890:	460b      	mov	r3, r1
+ 8001892:	4610      	mov	r0, r2
+ 8001894:	4619      	mov	r1, r3
+ 8001896:	f7ff f8f7 	bl	8000a88 <__aeabi_d2f>
+ 800189a:	4603      	mov	r3, r0
+ 800189c:	f8c7 3164 	str.w	r3, [r7, #356]	@ 0x164
 float accel_pitch=atan2(-ax_g,sqrt(ay_g*ay_g+az_g*az_g))*180.0f/PI;
- 800189c:	f8d7 30fc 	ldr.w	r3, [r7, #252]	@ 0xfc
- 80018a0:	f083 4300 	eor.w	r3, r3, #2147483648	@ 0x80000000
- 80018a4:	4618      	mov	r0, r3
- 80018a6:	f7fe fdbf 	bl	8000428 <__aeabi_f2d>
- 80018aa:	4604      	mov	r4, r0
- 80018ac:	460d      	mov	r5, r1
- 80018ae:	f8d7 10f8 	ldr.w	r1, [r7, #248]	@ 0xf8
- 80018b2:	f8d7 00f8 	ldr.w	r0, [r7, #248]	@ 0xf8
- 80018b6:	f7ff fa45 	bl	8000d44 <__aeabi_fmul>
- 80018ba:	4603      	mov	r3, r0
- 80018bc:	461e      	mov	r6, r3
- 80018be:	f8d7 10f4 	ldr.w	r1, [r7, #244]	@ 0xf4
- 80018c2:	f8d7 00f4 	ldr.w	r0, [r7, #244]	@ 0xf4
- 80018c6:	f7ff fa3d 	bl	8000d44 <__aeabi_fmul>
- 80018ca:	4603      	mov	r3, r0
- 80018cc:	4619      	mov	r1, r3
- 80018ce:	4630      	mov	r0, r6
- 80018d0:	f7ff f930 	bl	8000b34 <__addsf3>
- 80018d4:	4603      	mov	r3, r0
- 80018d6:	4618      	mov	r0, r3
- 80018d8:	f7fe fda6 	bl	8000428 <__aeabi_f2d>
- 80018dc:	4602      	mov	r2, r0
- 80018de:	460b      	mov	r3, r1
- 80018e0:	4610      	mov	r0, r2
- 80018e2:	4619      	mov	r1, r3
- 80018e4:	f007 f8ba 	bl	8008a5c <sqrt>
- 80018e8:	4602      	mov	r2, r0
- 80018ea:	460b      	mov	r3, r1
- 80018ec:	4620      	mov	r0, r4
- 80018ee:	4629      	mov	r1, r5
- 80018f0:	f007 f8b2 	bl	8008a58 <atan2>
- 80018f4:	f04f 0200 	mov.w	r2, #0
- 80018f8:	4b46      	ldr	r3, [pc, #280]	@ (8001a14 <main+0x594>)
- 80018fa:	f7fe fded 	bl	80004d8 <__aeabi_dmul>
- 80018fe:	4602      	mov	r2, r0
- 8001900:	460b      	mov	r3, r1
- 8001902:	4610      	mov	r0, r2
- 8001904:	4619      	mov	r1, r3
- 8001906:	a33e      	add	r3, pc, #248	@ (adr r3, 8001a00 <main+0x580>)
- 8001908:	e9d3 2300 	ldrd	r2, r3, [r3]
- 800190c:	f7fe ff0e 	bl	800072c <__aeabi_ddiv>
- 8001910:	4602      	mov	r2, r0
- 8001912:	460b      	mov	r3, r1
- 8001914:	4610      	mov	r0, r2
- 8001916:	4619      	mov	r1, r3
- 8001918:	f7ff f8b6 	bl	8000a88 <__aeabi_d2f>
- 800191c:	4603      	mov	r3, r0
- 800191e:	f8c7 30e0 	str.w	r3, [r7, #224]	@ 0xe0
+ 80018a0:	f8d7 317c 	ldr.w	r3, [r7, #380]	@ 0x17c
+ 80018a4:	f083 4300 	eor.w	r3, r3, #2147483648	@ 0x80000000
+ 80018a8:	4618      	mov	r0, r3
+ 80018aa:	f7fe fdbd 	bl	8000428 <__aeabi_f2d>
+ 80018ae:	4604      	mov	r4, r0
+ 80018b0:	460d      	mov	r5, r1
+ 80018b2:	f8d7 1178 	ldr.w	r1, [r7, #376]	@ 0x178
+ 80018b6:	f8d7 0178 	ldr.w	r0, [r7, #376]	@ 0x178
+ 80018ba:	f7ff fa43 	bl	8000d44 <__aeabi_fmul>
+ 80018be:	4603      	mov	r3, r0
+ 80018c0:	461e      	mov	r6, r3
+ 80018c2:	f8d7 1174 	ldr.w	r1, [r7, #372]	@ 0x174
+ 80018c6:	f8d7 0174 	ldr.w	r0, [r7, #372]	@ 0x174
+ 80018ca:	f7ff fa3b 	bl	8000d44 <__aeabi_fmul>
+ 80018ce:	4603      	mov	r3, r0
+ 80018d0:	4619      	mov	r1, r3
+ 80018d2:	4630      	mov	r0, r6
+ 80018d4:	f7ff f92e 	bl	8000b34 <__addsf3>
+ 80018d8:	4603      	mov	r3, r0
+ 80018da:	4618      	mov	r0, r3
+ 80018dc:	f7fe fda4 	bl	8000428 <__aeabi_f2d>
+ 80018e0:	4602      	mov	r2, r0
+ 80018e2:	460b      	mov	r3, r1
+ 80018e4:	4610      	mov	r0, r2
+ 80018e6:	4619      	mov	r1, r3
+ 80018e8:	f007 f8b8 	bl	8008a5c <sqrt>
+ 80018ec:	4602      	mov	r2, r0
+ 80018ee:	460b      	mov	r3, r1
+ 80018f0:	4620      	mov	r0, r4
+ 80018f2:	4629      	mov	r1, r5
+ 80018f4:	f007 f8b0 	bl	8008a58 <atan2>
+ 80018f8:	f04f 0200 	mov.w	r2, #0
+ 80018fc:	4b45      	ldr	r3, [pc, #276]	@ (8001a14 <main+0x594>)
+ 80018fe:	f7fe fdeb 	bl	80004d8 <__aeabi_dmul>
+ 8001902:	4602      	mov	r2, r0
+ 8001904:	460b      	mov	r3, r1
+ 8001906:	4610      	mov	r0, r2
+ 8001908:	4619      	mov	r1, r3
+ 800190a:	a33d      	add	r3, pc, #244	@ (adr r3, 8001a00 <main+0x580>)
+ 800190c:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 8001910:	f7fe ff0c 	bl	800072c <__aeabi_ddiv>
+ 8001914:	4602      	mov	r2, r0
+ 8001916:	460b      	mov	r3, r1
+ 8001918:	4610      	mov	r0, r2
+ 800191a:	4619      	mov	r1, r3
+ 800191c:	f7ff f8b4 	bl	8000a88 <__aeabi_d2f>
+ 8001920:	4603      	mov	r3, r0
+ 8001922:	f8c7 3160 	str.w	r3, [r7, #352]	@ 0x160
 
   //陀螺儀積分
 roll+=gyro_x*DT;
- 8001922:	493d      	ldr	r1, [pc, #244]	@ (8001a18 <main+0x598>)
- 8001924:	f8d7 00f0 	ldr.w	r0, [r7, #240]	@ 0xf0
- 8001928:	f7ff fa0c 	bl	8000d44 <__aeabi_fmul>
- 800192c:	4603      	mov	r3, r0
- 800192e:	461a      	mov	r2, r3
- 8001930:	4b3a      	ldr	r3, [pc, #232]	@ (8001a1c <main+0x59c>)
- 8001932:	681b      	ldr	r3, [r3, #0]
- 8001934:	4619      	mov	r1, r3
- 8001936:	4610      	mov	r0, r2
- 8001938:	f7ff f8fc 	bl	8000b34 <__addsf3>
- 800193c:	4603      	mov	r3, r0
- 800193e:	461a      	mov	r2, r3
- 8001940:	4b36      	ldr	r3, [pc, #216]	@ (8001a1c <main+0x59c>)
- 8001942:	601a      	str	r2, [r3, #0]
+ 8001926:	493c      	ldr	r1, [pc, #240]	@ (8001a18 <main+0x598>)
+ 8001928:	f8d7 0170 	ldr.w	r0, [r7, #368]	@ 0x170
+ 800192c:	f7ff fa0a 	bl	8000d44 <__aeabi_fmul>
+ 8001930:	4603      	mov	r3, r0
+ 8001932:	461a      	mov	r2, r3
+ 8001934:	4b39      	ldr	r3, [pc, #228]	@ (8001a1c <main+0x59c>)
+ 8001936:	681b      	ldr	r3, [r3, #0]
+ 8001938:	4619      	mov	r1, r3
+ 800193a:	4610      	mov	r0, r2
+ 800193c:	f7ff f8fa 	bl	8000b34 <__addsf3>
+ 8001940:	4603      	mov	r3, r0
+ 8001942:	461a      	mov	r2, r3
+ 8001944:	4b35      	ldr	r3, [pc, #212]	@ (8001a1c <main+0x59c>)
+ 8001946:	601a      	str	r2, [r3, #0]
 pitch+=gyro_y*DT;
- 8001944:	4934      	ldr	r1, [pc, #208]	@ (8001a18 <main+0x598>)
- 8001946:	f8d7 00ec 	ldr.w	r0, [r7, #236]	@ 0xec
- 800194a:	f7ff f9fb 	bl	8000d44 <__aeabi_fmul>
- 800194e:	4603      	mov	r3, r0
- 8001950:	461a      	mov	r2, r3
- 8001952:	4b33      	ldr	r3, [pc, #204]	@ (8001a20 <main+0x5a0>)
- 8001954:	681b      	ldr	r3, [r3, #0]
- 8001956:	4619      	mov	r1, r3
- 8001958:	4610      	mov	r0, r2
- 800195a:	f7ff f8eb 	bl	8000b34 <__addsf3>
- 800195e:	4603      	mov	r3, r0
- 8001960:	461a      	mov	r2, r3
- 8001962:	4b2f      	ldr	r3, [pc, #188]	@ (8001a20 <main+0x5a0>)
- 8001964:	601a      	str	r2, [r3, #0]
+ 8001948:	4933      	ldr	r1, [pc, #204]	@ (8001a18 <main+0x598>)
+ 800194a:	f8d7 016c 	ldr.w	r0, [r7, #364]	@ 0x16c
+ 800194e:	f7ff f9f9 	bl	8000d44 <__aeabi_fmul>
+ 8001952:	4603      	mov	r3, r0
+ 8001954:	461a      	mov	r2, r3
+ 8001956:	4b32      	ldr	r3, [pc, #200]	@ (8001a20 <main+0x5a0>)
+ 8001958:	681b      	ldr	r3, [r3, #0]
+ 800195a:	4619      	mov	r1, r3
+ 800195c:	4610      	mov	r0, r2
+ 800195e:	f7ff f8e9 	bl	8000b34 <__addsf3>
+ 8001962:	4603      	mov	r3, r0
+ 8001964:	461a      	mov	r2, r3
+ 8001966:	4b2e      	ldr	r3, [pc, #184]	@ (8001a20 <main+0x5a0>)
+ 8001968:	601a      	str	r2, [r3, #0]
 
     //互補濾波融合
 roll=ALPHA*roll+(1.0f-ALPHA)*accel_roll;
- 8001966:	4b2d      	ldr	r3, [pc, #180]	@ (8001a1c <main+0x59c>)
- 8001968:	681b      	ldr	r3, [r3, #0]
- 800196a:	492e      	ldr	r1, [pc, #184]	@ (8001a24 <main+0x5a4>)
- 800196c:	4618      	mov	r0, r3
- 800196e:	f7ff f9e9 	bl	8000d44 <__aeabi_fmul>
- 8001972:	4603      	mov	r3, r0
- 8001974:	461c      	mov	r4, r3
- 8001976:	492c      	ldr	r1, [pc, #176]	@ (8001a28 <main+0x5a8>)
- 8001978:	f8d7 00e4 	ldr.w	r0, [r7, #228]	@ 0xe4
- 800197c:	f7ff f9e2 	bl	8000d44 <__aeabi_fmul>
- 8001980:	4603      	mov	r3, r0
- 8001982:	4619      	mov	r1, r3
- 8001984:	4620      	mov	r0, r4
- 8001986:	f7ff f8d5 	bl	8000b34 <__addsf3>
- 800198a:	4603      	mov	r3, r0
- 800198c:	461a      	mov	r2, r3
- 800198e:	4b23      	ldr	r3, [pc, #140]	@ (8001a1c <main+0x59c>)
- 8001990:	601a      	str	r2, [r3, #0]
+ 800196a:	4b2c      	ldr	r3, [pc, #176]	@ (8001a1c <main+0x59c>)
+ 800196c:	681b      	ldr	r3, [r3, #0]
+ 800196e:	492d      	ldr	r1, [pc, #180]	@ (8001a24 <main+0x5a4>)
+ 8001970:	4618      	mov	r0, r3
+ 8001972:	f7ff f9e7 	bl	8000d44 <__aeabi_fmul>
+ 8001976:	4603      	mov	r3, r0
+ 8001978:	461c      	mov	r4, r3
+ 800197a:	492b      	ldr	r1, [pc, #172]	@ (8001a28 <main+0x5a8>)
+ 800197c:	f8d7 0164 	ldr.w	r0, [r7, #356]	@ 0x164
+ 8001980:	f7ff f9e0 	bl	8000d44 <__aeabi_fmul>
+ 8001984:	4603      	mov	r3, r0
+ 8001986:	4619      	mov	r1, r3
+ 8001988:	4620      	mov	r0, r4
+ 800198a:	f7ff f8d3 	bl	8000b34 <__addsf3>
+ 800198e:	4603      	mov	r3, r0
+ 8001990:	461a      	mov	r2, r3
+ 8001992:	4b22      	ldr	r3, [pc, #136]	@ (8001a1c <main+0x59c>)
+ 8001994:	601a      	str	r2, [r3, #0]
 pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
- 8001992:	4b23      	ldr	r3, [pc, #140]	@ (8001a20 <main+0x5a0>)
- 8001994:	681b      	ldr	r3, [r3, #0]
- 8001996:	4923      	ldr	r1, [pc, #140]	@ (8001a24 <main+0x5a4>)
- 8001998:	4618      	mov	r0, r3
- 800199a:	f7ff f9d3 	bl	8000d44 <__aeabi_fmul>
- 800199e:	4603      	mov	r3, r0
- 80019a0:	461c      	mov	r4, r3
- 80019a2:	4921      	ldr	r1, [pc, #132]	@ (8001a28 <main+0x5a8>)
- 80019a4:	f8d7 00e0 	ldr.w	r0, [r7, #224]	@ 0xe0
- 80019a8:	f7ff f9cc 	bl	8000d44 <__aeabi_fmul>
- 80019ac:	4603      	mov	r3, r0
- 80019ae:	4619      	mov	r1, r3
- 80019b0:	4620      	mov	r0, r4
- 80019b2:	f7ff f8bf 	bl	8000b34 <__addsf3>
- 80019b6:	4603      	mov	r3, r0
- 80019b8:	461a      	mov	r2, r3
- 80019ba:	4b19      	ldr	r3, [pc, #100]	@ (8001a20 <main+0x5a0>)
- 80019bc:	601a      	str	r2, [r3, #0]
+ 8001996:	4b22      	ldr	r3, [pc, #136]	@ (8001a20 <main+0x5a0>)
+ 8001998:	681b      	ldr	r3, [r3, #0]
+ 800199a:	4922      	ldr	r1, [pc, #136]	@ (8001a24 <main+0x5a4>)
+ 800199c:	4618      	mov	r0, r3
+ 800199e:	f7ff f9d1 	bl	8000d44 <__aeabi_fmul>
+ 80019a2:	4603      	mov	r3, r0
+ 80019a4:	461c      	mov	r4, r3
+ 80019a6:	4920      	ldr	r1, [pc, #128]	@ (8001a28 <main+0x5a8>)
+ 80019a8:	f8d7 0160 	ldr.w	r0, [r7, #352]	@ 0x160
+ 80019ac:	f7ff f9ca 	bl	8000d44 <__aeabi_fmul>
+ 80019b0:	4603      	mov	r3, r0
+ 80019b2:	4619      	mov	r1, r3
+ 80019b4:	4620      	mov	r0, r4
+ 80019b6:	f7ff f8bd 	bl	8000b34 <__addsf3>
+ 80019ba:	4603      	mov	r3, r0
+ 80019bc:	461a      	mov	r2, r3
+ 80019be:	4b18      	ldr	r3, [pc, #96]	@ (8001a20 <main+0x5a0>)
+ 80019c0:	601a      	str	r2, [r3, #0]
 
 //輸出
 
    sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
- 80019be:	4b17      	ldr	r3, [pc, #92]	@ (8001a1c <main+0x59c>)
- 80019c0:	681b      	ldr	r3, [r3, #0]
- 80019c2:	4618      	mov	r0, r3
- 80019c4:	f7fe fd30 	bl	8000428 <__aeabi_f2d>
- 80019c8:	4604      	mov	r4, r0
- 80019ca:	460d      	mov	r5, r1
- 80019cc:	4b14      	ldr	r3, [pc, #80]	@ (8001a20 <main+0x5a0>)
- 80019ce:	681b      	ldr	r3, [r3, #0]
- 80019d0:	4618      	mov	r0, r3
- 80019d2:	f7fe fd29 	bl	8000428 <__aeabi_f2d>
- 80019d6:	4602      	mov	r2, r0
- 80019d8:	460b      	mov	r3, r1
- 80019da:	f107 0034 	add.w	r0, r7, #52	@ 0x34
- 80019de:	e9cd 2300 	strd	r2, r3, [sp]
- 80019e2:	4622      	mov	r2, r4
- 80019e4:	462b      	mov	r3, r5
- 80019e6:	4911      	ldr	r1, [pc, #68]	@ (8001a2c <main+0x5ac>)
- 80019e8:	f004 feea 	bl	80067c0 <siprintf>
+ 80019c2:	4b16      	ldr	r3, [pc, #88]	@ (8001a1c <main+0x59c>)
+ 80019c4:	681b      	ldr	r3, [r3, #0]
+ 80019c6:	4618      	mov	r0, r3
+ 80019c8:	f7fe fd2e 	bl	8000428 <__aeabi_f2d>
+ 80019cc:	4604      	mov	r4, r0
+ 80019ce:	460d      	mov	r5, r1
+ 80019d0:	4b13      	ldr	r3, [pc, #76]	@ (8001a20 <main+0x5a0>)
+ 80019d2:	681b      	ldr	r3, [r3, #0]
+ 80019d4:	4618      	mov	r0, r3
+ 80019d6:	f7fe fd27 	bl	8000428 <__aeabi_f2d>
+ 80019da:	4602      	mov	r2, r0
+ 80019dc:	460b      	mov	r3, r1
+ 80019de:	1d38      	adds	r0, r7, #4
+ 80019e0:	e9cd 2300 	strd	r2, r3, [sp]
+ 80019e4:	4622      	mov	r2, r4
+ 80019e6:	462b      	mov	r3, r5
+ 80019e8:	4910      	ldr	r1, [pc, #64]	@ (8001a2c <main+0x5ac>)
+ 80019ea:	f004 fee9 	bl	80067c0 <siprintf>
    UART_SendString(msg);
- 80019ec:	f107 0334 	add.w	r3, r7, #52	@ 0x34
+ 80019ee:	1d3b      	adds	r3, r7, #4
  80019f0:	4618      	mov	r0, r3
  80019f2:	f7ff fc57 	bl	80012a4 <UART_SendString>
 
-   HAL_Delay(10);
- 80019f6:	200a      	movs	r0, #10
+   HAL_Delay(50);
+ 80019f6:	2032      	movs	r0, #50	@ 0x32
  80019f8:	f000 fbce 	bl	8002198 <HAL_Delay>
   {
  80019fc:	e618      	b.n	8001630 <main+0x1b0>

@@ -338,7 +338,7 @@ float Thermistor_GetTemperature(uint32_t adc_value)
 
     float temp_k = 1.0f / (1.0f/t0 + (1.0f/b_value) * logf(r_ntc / r0));
     float temp_c = temp_k - 273.15f;   // 轉換成攝氏
-
+    temp_c=temp_c-19.4f;
     return temp_c;
 }
 /*  熱換算  */

@@ -54,9 +54,11 @@ volatile uint8_t rb_buffer[RB_SIZE];
 volatile uint16_t rb_head=0;
 volatile uint16_t rb_tail=0;
 volatile uint16_t rb_count=0;
- uint8_t rx_buffer = 0;
+uint8_t rx_buffer=0;
+int16_t gyro_bias_x=0;
+int16_t gyro_bias_y=0;
+int16_t gyro_bias_z=0;
 /* USER CODE END PV */
-
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -356,6 +358,28 @@ void MPU6050_InitAngles(void)
     UART_SendString(msg);
 }
 /*	互補濾波  */
+/*	陀螺儀校準  */
+void MPU6050_CalibrateGyro(void){
+	int32_t sum_x=0,sum_y=0,sum_z=0;
+	int16_t gx,gy,gz;
+	 for(int i=0;i<200;i++)
+	    {
+	        MPU6050_ReadGyro(&gx,&gy,&gz);
+	        sum_x+=gx;
+	        sum_y+=gy;
+	        sum_z+=gz;
+	        HAL_Delay(5);
+	    }
+	 //計算平均值
+	 gyro_bias_x=sum_x/200;
+	 gyro_bias_y=sum_y/200;
+	 gyro_bias_z=sum_z/200;
+
+	 char msg[60];
+	    sprintf(msg,"Gyro Bias: X=%d, Y=%d, Z=%d\r\n",gyro_bias_x,gyro_bias_y,gyro_bias_z);
+	    UART_SendString(msg);
+}
+/*	陀螺儀校準  */
 /*   MPU6050   */
 /* USER CODE END 0 */
 
@@ -439,8 +463,8 @@ int main(void)
           UART_SendString(scan_msg);
       }
   }
-  // ===  I2C 掃描器（結束） ===
-  // ===  讀取who am I 喚醒 MPU6050===
+  //   I2C 掃描器（結束） //
+  //   讀取who am I 喚醒 MPU6050  //
 
   uint8_t who_am_i = 0;
 
@@ -474,15 +498,18 @@ int main(void)
   {
       UART_SendString("MPU6050 NOT found! (WHO_AM_I error)\r\n");
   }
-// ===  讀取who am I 喚醒 MPU6050結束===
-  // === 2. 原本的 OLED 初始化 ===
+//  讀取who am I 喚醒 MPU6050結束 //
+  //  原本的 OLED 初始化 //
   if (oled_addr != 0xFF)
   {
       OLED_Init();    // 初始化 OLED
   }
 
-
-
+/* 陀螺儀校準 */
+  UART_SendString("Calibrating Gyro...\r\n");
+  MPU6050_CalibrateGyro();
+  UART_SendString("Calibration Done!\r\n");
+  /* 陀螺儀校準 */
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -497,11 +524,9 @@ int main(void)
   uint16_t voltage_mV =(uint16_t)(adc_val*3300.0f/4096.0f);
   char oled_buf[100];
 
-  sprintf(oled_buf,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
 
 
-  OLED_Clear();
-  OLED_WriteString(oled_buf);
+
   /* 光敏  */
   /* TTL  */
   char uart_buf[100];
@@ -529,10 +554,6 @@ int main(void)
    MPU6050_ReadGyro(&gx,&gy,&gz);
 
    char msg[80];
-  // sprintf(msg, "A: %6d %6d %6d | G: %6d %6d %6d\r\n", ax, ay, az, gx, gy, gz);
- //  UART_SendString(msg);
-
-//   HAL_Delay(500);
 
   /*   MPU6050互補濾波   */
 
@@ -547,9 +568,9 @@ float ay_g=ay/16384.0f;
 float az_g=az/16384.0f;
 
   //陀螺儀
-float gyro_x=gx/131.0f;
-float gyro_y=gy/131.0f;
-float gyro_z=gz/131.0f;
+float gyro_x=(gx-gyro_bias_x)/131.0f;
+float gyro_y=(gy-gyro_bias_y)/131.0f;
+float gyro_z=(gz-gyro_bias_z)/131.0f;
 (void)gyro_z;
 //加速度計算角度
 float accel_roll=atan2(ay_g,az_g)*180.0f/PI;
@@ -566,12 +587,22 @@ pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
 //輸出
 
    sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
+
    UART_SendString(msg);
 
    HAL_Delay(50);
   /*   MPU6050互補濾波   */
   /*   MPU6050   */
-  }
+/*OLED*/
+   // 把 roll 和 pitch 拆成「整數部分」和「小數部分」
+   char temp[50];
+
+   sprintf(oled_buf,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
+   sprintf(temp,"L:%4d %d.%02dV \n",(int)adc_val,voltage_mV/1000,(voltage_mV%1000)/10);
+   strcat(oled_buf, temp);
+   OLED_Clear();
+   OLED_WriteString(oled_buf);
+  }//while結尾
   /* USER CODE END 3 */
 }
 

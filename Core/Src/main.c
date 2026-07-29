@@ -18,11 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <math.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,6 +60,7 @@ int16_t gyro_bias_x=0;
 int16_t gyro_bias_y=0;
 int16_t gyro_bias_z=0;
 /* USER CODE END PV */
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -319,7 +321,27 @@ uint32_t ADC_Read_Channel(uint32_t channel)
     return 0;
 }
 
+/*  熱換算  */
+float Thermistor_GetTemperature(uint32_t adc_value)
+{
+    // 1. 計算電壓
+    float voltage = adc_value * 3.3f / 4096.0f;
 
+    // 2. 計算熱敏電阻的電阻值（假設分壓電阻 = 10kΩ）
+    float r_fixed = 10000.0f;          // 固定電阻（模組上的）
+    float r_ntc = (voltage * r_fixed) / (3.3f - voltage);
+
+    // 3. 用 Steinhart-Hart 計算溫度（B = 3950, R0 = 10000Ω @ 25°C）
+    float t0 = 298.15f;                // 25°C = 298.15 K
+    float r0 = 10000.0f;               // 25°C 時的電阻值
+    float b_value = 3950.0f;           // NTC 的 B 值（常見）
+
+    float temp_k = 1.0f / (1.0f/t0 + (1.0f/b_value) * logf(r_ntc / r0));
+    float temp_c = temp_k - 273.15f;   // 轉換成攝氏
+
+    return temp_c;
+}
+/*  熱換算  */
 /*  ADC彙整  */
 void UART_SendString(char *str)
 	    {
@@ -432,6 +454,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -556,22 +579,15 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 /* ADC彙整 */
-  uint32_t light_adc=ADC_Read_Channel(ADC_CHANNEL_0);
-  uint16_t voltage_mV_light =(uint16_t)(light_adc*3300.0f/4096.0f);
-
-  char oled_buf[100];
-
-
-
-
-  /* 光敏  */
-  /* 熱敏  */
+	  uint32_t light_adc=ADC_Read_Channel(ADC_CHANNEL_0);
+	    float light_voltage =light_adc*3.3f/4096.0f;
+/*     光敏/熱敏      */
+	    uint32_t temp_adc=ADC_Read_Channel(ADC_CHANNEL_1);
+	      float temperature=Thermistor_GetTemperature(temp_adc);
 
   /* ADC彙整 */
   /* TTL  */
-  char uart_buf[100];
- sprintf(uart_buf,"Light: %d,Voltage:%d.%02dV\r\n",(int)light_adc,voltage_mV_light/1000,(voltage_mV_light%1000)/10);
- // UART_SendString(uart_buf); //光敏回傳電腦
+
 
  uint8_t received_byte;
    if (RB_Pop(&received_byte))
@@ -598,7 +614,7 @@ int main(void)
   /*   MPU6050互補濾波   */
 
 
-  //讀取原始數據
+
 
 
 
@@ -626,22 +642,25 @@ pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
 
 //輸出
 
-   sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
+ // sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
 
-   UART_SendString(msg);
+  // UART_SendString(msg);
 
-   HAL_Delay(50);
+float temper = Thermistor_GetTemperature(temp_adc);
+float voltage_t = temp_adc * 3.3f / 4096.0f;
+char dbg[50];
+sprintf(dbg, "ADC: %d,V: %.2fV, Temp: %.1fC\r\n", temp_adc,voltage_t, temper);
+UART_SendString(dbg);
   /*   MPU6050互補濾波   */
   /*   MPU6050   */
 /*OLED*/
    // 把 roll 和 pitch 拆成「整數部分」和「小數部分」
-   char temp[50];
-
-   sprintf(oled_buf,"Roll: %7.2f\nPitch: %7.2f\r\n",roll,pitch);
-   sprintf(temp,"L:%4d %d.%02dV \n",(int)light_adc,voltage_mV_light/1000,(voltage_mV_light%1000)/10);
-   strcat(oled_buf, temp);
+   char oled_buf[80];
+   sprintf(oled_buf,"Roll: %7.2f\nPitch: %7.2f\nL:%.2fV\nT:%.1fC",roll,pitch,light_voltage,temperature);
    OLED_Clear();
    OLED_WriteString(oled_buf);
+
+   HAL_Delay(100);
   }//while結尾
   /* USER CODE END 3 */
 }
@@ -713,12 +732,12 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 2;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -729,6 +748,15 @@ static void MX_ADC1_Init(void)
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();

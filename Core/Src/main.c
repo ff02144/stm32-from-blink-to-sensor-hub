@@ -641,22 +641,34 @@ roll=ALPHA*roll+(1.0f-ALPHA)*accel_roll;
 pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
 
 //輸出
+/*//PuTTY測試
+  sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
 
- // sprintf(msg,"Roll: %7.2f  Pitch: %7.2f\r\n",roll,pitch);
+   UART_SendString(msg);
 
-  // UART_SendString(msg);
+*///PuTTY測試
+  /*   MPU6050互補濾波   */
+  /*   MPU6050   */
 
-float temper = Thermistor_GetTemperature(temp_adc);
+
+
+/*OLED*/
+
+
+/*//PuTTY測試
+  float temper = Thermistor_GetTemperature(temp_adc);
 float voltage_t = temp_adc * 3.3f / 4096.0f;
 char dbg[50];
 sprintf(dbg, "ADC: %d,V: %.2fV, Temp: %.1fC\r\n", temp_adc,voltage_t, temper);
 UART_SendString(dbg);
-  /*   MPU6050互補濾波   */
-  /*   MPU6050   */
-/*OLED*/
+*///PuTTY測試
+
+
+
    // 把 roll 和 pitch 拆成「整數部分」和「小數部分」
    char oled_buf[80];
-   sprintf(oled_buf,"Roll: %7.2f\nPitch: %7.2f\nL:%.2fV\nT:%.1fC",roll,pitch,light_voltage,temperature);
+   float brightness=(100-(light_adc/4096.0f)*100.0f);
+   sprintf(oled_buf,"Roll: %7.2f\nPitch: %7.2f\nL:%.2f%\nT:%.1fC",roll,pitch,brightness,temperature);
    OLED_Clear();
    OLED_WriteString(oled_buf);
 

@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  0000c1d8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000caf9  00000000  00000000  0000c201  2**0
+ 12 .debug_info   0000d08e  00000000  00000000  0000c201  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000217a  00000000  00000000  00018cfa  2**0
+ 13 .debug_abbrev 00002323  00000000  00000000  0001928f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000bd0  00000000  00000000  0001ae78  2**3
+ 14 .debug_aranges 00000be8  00000000  00000000  0001b5b8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 0000093e  00000000  00000000  0001ba48  2**0
+ 15 .debug_rnglists 0000094b  00000000  00000000  0001c1a0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00018e10  00000000  00000000  0001c386  2**0
+ 16 .debug_macro  00019085  00000000  00000000  0001caeb  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000101c7  00000000  00000000  00035196  2**0
+ 17 .debug_line   00010af2  00000000  00000000  00035b70  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008bf07  00000000  00000000  0004535d  2**0
+ 18 .debug_str    0008bf25  00000000  00000000  00046662  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000d1264  2**0
+ 19 .comment      00000043  00000000  00000000  000d2587  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000042c0  00000000  00000000  000d12a8  2**2
+ 20 .debug_frame  000042d0  00000000  00000000  000d25cc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000054  00000000  00000000  000d5568  2**0
+ 21 .debug_line_str 00000054  00000000  00000000  000d689c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1459,605 +1459,606 @@ Disassembly of section .text:
  80010f6:	f04f 0001 	mov.w	r0, #1
  80010fa:	4770      	bx	lr
 
-080010fc <OLED_Init>:
+080010fc <ADC_Read_Channel>:
+#include "adc.h"
+#include <math.h>   
+
+uint32_t ADC_Read_Channel(uint32_t channel)
+{
+ 80010fc:	b580      	push	{r7, lr}
+ 80010fe:	b086      	sub	sp, #24
+ 8001100:	af00      	add	r7, sp, #0
+ 8001102:	6078      	str	r0, [r7, #4]
+    ADC_ChannelConfTypeDef sConfig={0};
+ 8001104:	f107 030c 	add.w	r3, r7, #12
+ 8001108:	2200      	movs	r2, #0
+ 800110a:	601a      	str	r2, [r3, #0]
+ 800110c:	605a      	str	r2, [r3, #4]
+ 800110e:	609a      	str	r2, [r3, #8]
+
+    // 設定要讀取的通道
+    sConfig.Channel=channel;
+ 8001110:	687b      	ldr	r3, [r7, #4]
+ 8001112:	60fb      	str	r3, [r7, #12]
+    sConfig.Rank=1;
+ 8001114:	2301      	movs	r3, #1
+ 8001116:	613b      	str	r3, [r7, #16]
+    sConfig.SamplingTime=ADC_SAMPLETIME_13CYCLES_5;
+ 8001118:	2302      	movs	r3, #2
+ 800111a:	617b      	str	r3, [r7, #20]
+
+    if (HAL_ADC_ConfigChannel(&hadc1,&sConfig)!=HAL_OK)
+ 800111c:	f107 030c 	add.w	r3, r7, #12
+ 8001120:	4619      	mov	r1, r3
+ 8001122:	480e      	ldr	r0, [pc, #56]	@ (800115c <ADC_Read_Channel+0x60>)
+ 8001124:	f001 fce4 	bl	8002af0 <HAL_ADC_ConfigChannel>
+ 8001128:	4603      	mov	r3, r0
+ 800112a:	2b00      	cmp	r3, #0
+ 800112c:	d001      	beq.n	8001132 <ADC_Read_Channel+0x36>
+    {
+        return 0;
+ 800112e:	2300      	movs	r3, #0
+ 8001130:	e00f      	b.n	8001152 <ADC_Read_Channel+0x56>
+    }
+
+    HAL_ADC_Start(&hadc1);
+ 8001132:	480a      	ldr	r0, [pc, #40]	@ (800115c <ADC_Read_Channel+0x60>)
+ 8001134:	f001 fb1c 	bl	8002770 <HAL_ADC_Start>
+    if (HAL_ADC_PollForConversion(&hadc1,100)==HAL_OK)
+ 8001138:	2164      	movs	r1, #100	@ 0x64
+ 800113a:	4808      	ldr	r0, [pc, #32]	@ (800115c <ADC_Read_Channel+0x60>)
+ 800113c:	f001 fbc6 	bl	80028cc <HAL_ADC_PollForConversion>
+ 8001140:	4603      	mov	r3, r0
+ 8001142:	2b00      	cmp	r3, #0
+ 8001144:	d104      	bne.n	8001150 <ADC_Read_Channel+0x54>
+    {
+        return HAL_ADC_GetValue(&hadc1);
+ 8001146:	4805      	ldr	r0, [pc, #20]	@ (800115c <ADC_Read_Channel+0x60>)
+ 8001148:	f001 fcc6 	bl	8002ad8 <HAL_ADC_GetValue>
+ 800114c:	4603      	mov	r3, r0
+ 800114e:	e000      	b.n	8001152 <ADC_Read_Channel+0x56>
+    }
+    return 0;
+ 8001150:	2300      	movs	r3, #0
+}
+ 8001152:	4618      	mov	r0, r3
+ 8001154:	3718      	adds	r7, #24
+ 8001156:	46bd      	mov	sp, r7
+ 8001158:	bd80      	pop	{r7, pc}
+ 800115a:	bf00      	nop
+ 800115c:	200001f4 	.word	0x200001f4
+
+08001160 <Thermistor_GetTemperature>:
+
+
+/*  熱換算  */
+float Thermistor_GetTemperature(uint32_t adc_value)
+{
+ 8001160:	b5b0      	push	{r4, r5, r7, lr}
+ 8001162:	b08a      	sub	sp, #40	@ 0x28
+ 8001164:	af00      	add	r7, sp, #0
+ 8001166:	6078      	str	r0, [r7, #4]
+    // 1. 計算電壓
+    float voltage = adc_value * 3.3f / 4096.0f;
+ 8001168:	6878      	ldr	r0, [r7, #4]
+ 800116a:	f7ff fd93 	bl	8000c94 <__aeabi_ui2f>
+ 800116e:	4603      	mov	r3, r0
+ 8001170:	492e      	ldr	r1, [pc, #184]	@ (800122c <Thermistor_GetTemperature+0xcc>)
+ 8001172:	4618      	mov	r0, r3
+ 8001174:	f7ff fde6 	bl	8000d44 <__aeabi_fmul>
+ 8001178:	4603      	mov	r3, r0
+ 800117a:	f04f 418b 	mov.w	r1, #1166016512	@ 0x45800000
+ 800117e:	4618      	mov	r0, r3
+ 8001180:	f7ff fe94 	bl	8000eac <__aeabi_fdiv>
+ 8001184:	4603      	mov	r3, r0
+ 8001186:	627b      	str	r3, [r7, #36]	@ 0x24
+
+    // 2. 計算熱敏電阻的電阻值（假設分壓電阻 = 10kΩ）
+    float r_fixed = 10000.0f;          // 固定電阻（模組上的）
+ 8001188:	4b29      	ldr	r3, [pc, #164]	@ (8001230 <Thermistor_GetTemperature+0xd0>)
+ 800118a:	623b      	str	r3, [r7, #32]
+    float r_ntc = (voltage * r_fixed) / (3.3f - voltage);
+ 800118c:	6a39      	ldr	r1, [r7, #32]
+ 800118e:	6a78      	ldr	r0, [r7, #36]	@ 0x24
+ 8001190:	f7ff fdd8 	bl	8000d44 <__aeabi_fmul>
+ 8001194:	4603      	mov	r3, r0
+ 8001196:	461c      	mov	r4, r3
+ 8001198:	6a79      	ldr	r1, [r7, #36]	@ 0x24
+ 800119a:	4824      	ldr	r0, [pc, #144]	@ (800122c <Thermistor_GetTemperature+0xcc>)
+ 800119c:	f7ff fcc8 	bl	8000b30 <__aeabi_fsub>
+ 80011a0:	4603      	mov	r3, r0
+ 80011a2:	4619      	mov	r1, r3
+ 80011a4:	4620      	mov	r0, r4
+ 80011a6:	f7ff fe81 	bl	8000eac <__aeabi_fdiv>
+ 80011aa:	4603      	mov	r3, r0
+ 80011ac:	61fb      	str	r3, [r7, #28]
+
+    // 3. 用 Steinhart-Hart 計算溫度（B = 3950, R0 = 10000Ω @ 25°C）
+    float t0 = 298.15f;                // 25°C = 298.15 K
+ 80011ae:	4b21      	ldr	r3, [pc, #132]	@ (8001234 <Thermistor_GetTemperature+0xd4>)
+ 80011b0:	61bb      	str	r3, [r7, #24]
+    float r0 = 10000.0f;               // 25°C 時的電阻值
+ 80011b2:	4b1f      	ldr	r3, [pc, #124]	@ (8001230 <Thermistor_GetTemperature+0xd0>)
+ 80011b4:	617b      	str	r3, [r7, #20]
+    float b_value = 3950.0f;           // NTC 的 B 值（常見）
+ 80011b6:	4b20      	ldr	r3, [pc, #128]	@ (8001238 <Thermistor_GetTemperature+0xd8>)
+ 80011b8:	613b      	str	r3, [r7, #16]
+
+    float temp_k = 1.0f / (1.0f/t0 + (1.0f/b_value) * logf(r_ntc / r0));
+ 80011ba:	69b9      	ldr	r1, [r7, #24]
+ 80011bc:	f04f 507e 	mov.w	r0, #1065353216	@ 0x3f800000
+ 80011c0:	f7ff fe74 	bl	8000eac <__aeabi_fdiv>
+ 80011c4:	4603      	mov	r3, r0
+ 80011c6:	461c      	mov	r4, r3
+ 80011c8:	6939      	ldr	r1, [r7, #16]
+ 80011ca:	f04f 507e 	mov.w	r0, #1065353216	@ 0x3f800000
+ 80011ce:	f7ff fe6d 	bl	8000eac <__aeabi_fdiv>
+ 80011d2:	4603      	mov	r3, r0
+ 80011d4:	461d      	mov	r5, r3
+ 80011d6:	6979      	ldr	r1, [r7, #20]
+ 80011d8:	69f8      	ldr	r0, [r7, #28]
+ 80011da:	f7ff fe67 	bl	8000eac <__aeabi_fdiv>
+ 80011de:	4603      	mov	r3, r0
+ 80011e0:	4618      	mov	r0, r3
+ 80011e2:	f007 fe83 	bl	8008eec <logf>
+ 80011e6:	4603      	mov	r3, r0
+ 80011e8:	4619      	mov	r1, r3
+ 80011ea:	4628      	mov	r0, r5
+ 80011ec:	f7ff fdaa 	bl	8000d44 <__aeabi_fmul>
+ 80011f0:	4603      	mov	r3, r0
+ 80011f2:	4619      	mov	r1, r3
+ 80011f4:	4620      	mov	r0, r4
+ 80011f6:	f7ff fc9d 	bl	8000b34 <__addsf3>
+ 80011fa:	4603      	mov	r3, r0
+ 80011fc:	4619      	mov	r1, r3
+ 80011fe:	f04f 507e 	mov.w	r0, #1065353216	@ 0x3f800000
+ 8001202:	f7ff fe53 	bl	8000eac <__aeabi_fdiv>
+ 8001206:	4603      	mov	r3, r0
+ 8001208:	60fb      	str	r3, [r7, #12]
+    float temp_c = temp_k - 273.15f;   // 轉換成攝氏
+ 800120a:	490c      	ldr	r1, [pc, #48]	@ (800123c <Thermistor_GetTemperature+0xdc>)
+ 800120c:	68f8      	ldr	r0, [r7, #12]
+ 800120e:	f7ff fc8f 	bl	8000b30 <__aeabi_fsub>
+ 8001212:	4603      	mov	r3, r0
+ 8001214:	60bb      	str	r3, [r7, #8]
+    temp_c=temp_c-19.4f;
+ 8001216:	490a      	ldr	r1, [pc, #40]	@ (8001240 <Thermistor_GetTemperature+0xe0>)
+ 8001218:	68b8      	ldr	r0, [r7, #8]
+ 800121a:	f7ff fc89 	bl	8000b30 <__aeabi_fsub>
+ 800121e:	4603      	mov	r3, r0
+ 8001220:	60bb      	str	r3, [r7, #8]
+    return temp_c;
+ 8001222:	68bb      	ldr	r3, [r7, #8]
+}
+ 8001224:	4618      	mov	r0, r3
+ 8001226:	3728      	adds	r7, #40	@ 0x28
+ 8001228:	46bd      	mov	sp, r7
+ 800122a:	bdb0      	pop	{r4, r5, r7, pc}
+ 800122c:	40533333 	.word	0x40533333
+ 8001230:	461c4000 	.word	0x461c4000
+ 8001234:	43951333 	.word	0x43951333
+ 8001238:	4576e000 	.word	0x4576e000
+ 800123c:	43889333 	.word	0x43889333
+ 8001240:	419b3333 	.word	0x419b3333
+
+08001244 <OLED_Init>:
 #include "oled.h"
 #include "main.h"  
 
 
 void OLED_Init(void)
 {
- 80010fc:	b580      	push	{r7, lr}
- 80010fe:	af00      	add	r7, sp, #0
+ 8001244:	b580      	push	{r7, lr}
+ 8001246:	af00      	add	r7, sp, #0
     HAL_Delay(100);
- 8001100:	2064      	movs	r0, #100	@ 0x64
- 8001102:	f001 fa39 	bl	8002578 <HAL_Delay>
+ 8001248:	2064      	movs	r0, #100	@ 0x64
+ 800124a:	f001 f995 	bl	8002578 <HAL_Delay>
     OLED_WriteCmd(0xAE);
- 8001106:	20ae      	movs	r0, #174	@ 0xae
- 8001108:	f000 f88a 	bl	8001220 <OLED_WriteCmd>
+ 800124e:	20ae      	movs	r0, #174	@ 0xae
+ 8001250:	f000 f88a 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xD5);
- 800110c:	20d5      	movs	r0, #213	@ 0xd5
- 800110e:	f000 f887 	bl	8001220 <OLED_WriteCmd>
+ 8001254:	20d5      	movs	r0, #213	@ 0xd5
+ 8001256:	f000 f887 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x80);
- 8001112:	2080      	movs	r0, #128	@ 0x80
- 8001114:	f000 f884 	bl	8001220 <OLED_WriteCmd>
+ 800125a:	2080      	movs	r0, #128	@ 0x80
+ 800125c:	f000 f884 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xA8);
- 8001118:	20a8      	movs	r0, #168	@ 0xa8
- 800111a:	f000 f881 	bl	8001220 <OLED_WriteCmd>
+ 8001260:	20a8      	movs	r0, #168	@ 0xa8
+ 8001262:	f000 f881 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x3F);
- 800111e:	203f      	movs	r0, #63	@ 0x3f
- 8001120:	f000 f87e 	bl	8001220 <OLED_WriteCmd>
+ 8001266:	203f      	movs	r0, #63	@ 0x3f
+ 8001268:	f000 f87e 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xD3);
- 8001124:	20d3      	movs	r0, #211	@ 0xd3
- 8001126:	f000 f87b 	bl	8001220 <OLED_WriteCmd>
+ 800126c:	20d3      	movs	r0, #211	@ 0xd3
+ 800126e:	f000 f87b 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x00);
- 800112a:	2000      	movs	r0, #0
- 800112c:	f000 f878 	bl	8001220 <OLED_WriteCmd>
+ 8001272:	2000      	movs	r0, #0
+ 8001274:	f000 f878 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x40);
- 8001130:	2040      	movs	r0, #64	@ 0x40
- 8001132:	f000 f875 	bl	8001220 <OLED_WriteCmd>
+ 8001278:	2040      	movs	r0, #64	@ 0x40
+ 800127a:	f000 f875 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x8D);
- 8001136:	208d      	movs	r0, #141	@ 0x8d
- 8001138:	f000 f872 	bl	8001220 <OLED_WriteCmd>
+ 800127e:	208d      	movs	r0, #141	@ 0x8d
+ 8001280:	f000 f872 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x14);
- 800113c:	2014      	movs	r0, #20
- 800113e:	f000 f86f 	bl	8001220 <OLED_WriteCmd>
+ 8001284:	2014      	movs	r0, #20
+ 8001286:	f000 f86f 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x20);
- 8001142:	2020      	movs	r0, #32
- 8001144:	f000 f86c 	bl	8001220 <OLED_WriteCmd>
+ 800128a:	2020      	movs	r0, #32
+ 800128c:	f000 f86c 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x00);
- 8001148:	2000      	movs	r0, #0
- 800114a:	f000 f869 	bl	8001220 <OLED_WriteCmd>
+ 8001290:	2000      	movs	r0, #0
+ 8001292:	f000 f869 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xA1);
- 800114e:	20a1      	movs	r0, #161	@ 0xa1
- 8001150:	f000 f866 	bl	8001220 <OLED_WriteCmd>
+ 8001296:	20a1      	movs	r0, #161	@ 0xa1
+ 8001298:	f000 f866 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xC8);
- 8001154:	20c8      	movs	r0, #200	@ 0xc8
- 8001156:	f000 f863 	bl	8001220 <OLED_WriteCmd>
+ 800129c:	20c8      	movs	r0, #200	@ 0xc8
+ 800129e:	f000 f863 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xDA);
- 800115a:	20da      	movs	r0, #218	@ 0xda
- 800115c:	f000 f860 	bl	8001220 <OLED_WriteCmd>
+ 80012a2:	20da      	movs	r0, #218	@ 0xda
+ 80012a4:	f000 f860 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x12);
- 8001160:	2012      	movs	r0, #18
- 8001162:	f000 f85d 	bl	8001220 <OLED_WriteCmd>
+ 80012a8:	2012      	movs	r0, #18
+ 80012aa:	f000 f85d 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x81);
- 8001166:	2081      	movs	r0, #129	@ 0x81
- 8001168:	f000 f85a 	bl	8001220 <OLED_WriteCmd>
+ 80012ae:	2081      	movs	r0, #129	@ 0x81
+ 80012b0:	f000 f85a 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xCF);
- 800116c:	20cf      	movs	r0, #207	@ 0xcf
- 800116e:	f000 f857 	bl	8001220 <OLED_WriteCmd>
+ 80012b4:	20cf      	movs	r0, #207	@ 0xcf
+ 80012b6:	f000 f857 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xD9);
- 8001172:	20d9      	movs	r0, #217	@ 0xd9
- 8001174:	f000 f854 	bl	8001220 <OLED_WriteCmd>
+ 80012ba:	20d9      	movs	r0, #217	@ 0xd9
+ 80012bc:	f000 f854 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xF1);
- 8001178:	20f1      	movs	r0, #241	@ 0xf1
- 800117a:	f000 f851 	bl	8001220 <OLED_WriteCmd>
+ 80012c0:	20f1      	movs	r0, #241	@ 0xf1
+ 80012c2:	f000 f851 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xDB);
- 800117e:	20db      	movs	r0, #219	@ 0xdb
- 8001180:	f000 f84e 	bl	8001220 <OLED_WriteCmd>
+ 80012c6:	20db      	movs	r0, #219	@ 0xdb
+ 80012c8:	f000 f84e 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x40);
- 8001184:	2040      	movs	r0, #64	@ 0x40
- 8001186:	f000 f84b 	bl	8001220 <OLED_WriteCmd>
+ 80012cc:	2040      	movs	r0, #64	@ 0x40
+ 80012ce:	f000 f84b 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xA4);
- 800118a:	20a4      	movs	r0, #164	@ 0xa4
- 800118c:	f000 f848 	bl	8001220 <OLED_WriteCmd>
+ 80012d2:	20a4      	movs	r0, #164	@ 0xa4
+ 80012d4:	f000 f848 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xA6);
- 8001190:	20a6      	movs	r0, #166	@ 0xa6
- 8001192:	f000 f845 	bl	8001220 <OLED_WriteCmd>
+ 80012d8:	20a6      	movs	r0, #166	@ 0xa6
+ 80012da:	f000 f845 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0x2E);
- 8001196:	202e      	movs	r0, #46	@ 0x2e
- 8001198:	f000 f842 	bl	8001220 <OLED_WriteCmd>
+ 80012de:	202e      	movs	r0, #46	@ 0x2e
+ 80012e0:	f000 f842 	bl	8001368 <OLED_WriteCmd>
     OLED_WriteCmd(0xAF);
- 800119c:	20af      	movs	r0, #175	@ 0xaf
- 800119e:	f000 f83f 	bl	8001220 <OLED_WriteCmd>
+ 80012e4:	20af      	movs	r0, #175	@ 0xaf
+ 80012e6:	f000 f83f 	bl	8001368 <OLED_WriteCmd>
 }
- 80011a2:	bf00      	nop
- 80011a4:	bd80      	pop	{r7, pc}
+ 80012ea:	bf00      	nop
+ 80012ec:	bd80      	pop	{r7, pc}
 	...
 
-080011a8 <OLED_Clear>:
+080012f0 <OLED_Clear>:
 
 
 void OLED_Clear(void)
 {
- 80011a8:	b580      	push	{r7, lr}
- 80011aa:	b0a6      	sub	sp, #152	@ 0x98
- 80011ac:	af04      	add	r7, sp, #16
+ 80012f0:	b580      	push	{r7, lr}
+ 80012f2:	b0a6      	sub	sp, #152	@ 0x98
+ 80012f4:	af04      	add	r7, sp, #16
     uint8_t zero[128] = {0};
- 80011ae:	1d3b      	adds	r3, r7, #4
- 80011b0:	2280      	movs	r2, #128	@ 0x80
- 80011b2:	2100      	movs	r1, #0
- 80011b4:	4618      	mov	r0, r3
- 80011b6:	f005 fd87 	bl	8006cc8 <memset>
+ 80012f6:	1d3b      	adds	r3, r7, #4
+ 80012f8:	2280      	movs	r2, #128	@ 0x80
+ 80012fa:	2100      	movs	r1, #0
+ 80012fc:	4618      	mov	r0, r3
+ 80012fe:	f005 fce3 	bl	8006cc8 <memset>
     for (uint8_t page = 0; page < 8; page++)
- 80011ba:	2300      	movs	r3, #0
- 80011bc:	f887 3087 	strb.w	r3, [r7, #135]	@ 0x87
- 80011c0:	e020      	b.n	8001204 <OLED_Clear+0x5c>
+ 8001302:	2300      	movs	r3, #0
+ 8001304:	f887 3087 	strb.w	r3, [r7, #135]	@ 0x87
+ 8001308:	e020      	b.n	800134c <OLED_Clear+0x5c>
     {
         OLED_WriteCmd(0xB0 + page);
- 80011c2:	f897 3087 	ldrb.w	r3, [r7, #135]	@ 0x87
- 80011c6:	3b50      	subs	r3, #80	@ 0x50
- 80011c8:	b2db      	uxtb	r3, r3
- 80011ca:	4618      	mov	r0, r3
- 80011cc:	f000 f828 	bl	8001220 <OLED_WriteCmd>
+ 800130a:	f897 3087 	ldrb.w	r3, [r7, #135]	@ 0x87
+ 800130e:	3b50      	subs	r3, #80	@ 0x50
+ 8001310:	b2db      	uxtb	r3, r3
+ 8001312:	4618      	mov	r0, r3
+ 8001314:	f000 f828 	bl	8001368 <OLED_WriteCmd>
         OLED_WriteCmd(0x00);
- 80011d0:	2000      	movs	r0, #0
- 80011d2:	f000 f825 	bl	8001220 <OLED_WriteCmd>
+ 8001318:	2000      	movs	r0, #0
+ 800131a:	f000 f825 	bl	8001368 <OLED_WriteCmd>
         OLED_WriteCmd(0x10);
- 80011d6:	2010      	movs	r0, #16
- 80011d8:	f000 f822 	bl	8001220 <OLED_WriteCmd>
+ 800131e:	2010      	movs	r0, #16
+ 8001320:	f000 f822 	bl	8001368 <OLED_WriteCmd>
         HAL_I2C_Mem_Write(&hi2c1, oled_addr << 1, 0x40, 1, zero, 128, 100);
- 80011dc:	4b0e      	ldr	r3, [pc, #56]	@ (8001218 <OLED_Clear+0x70>)
- 80011de:	781b      	ldrb	r3, [r3, #0]
- 80011e0:	005b      	lsls	r3, r3, #1
- 80011e2:	b299      	uxth	r1, r3
- 80011e4:	2364      	movs	r3, #100	@ 0x64
- 80011e6:	9302      	str	r3, [sp, #8]
- 80011e8:	2380      	movs	r3, #128	@ 0x80
- 80011ea:	9301      	str	r3, [sp, #4]
- 80011ec:	1d3b      	adds	r3, r7, #4
- 80011ee:	9300      	str	r3, [sp, #0]
- 80011f0:	2301      	movs	r3, #1
- 80011f2:	2240      	movs	r2, #64	@ 0x40
- 80011f4:	4809      	ldr	r0, [pc, #36]	@ (800121c <OLED_Clear+0x74>)
- 80011f6:	f002 fad5 	bl	80037a4 <HAL_I2C_Mem_Write>
+ 8001324:	4b0e      	ldr	r3, [pc, #56]	@ (8001360 <OLED_Clear+0x70>)
+ 8001326:	781b      	ldrb	r3, [r3, #0]
+ 8001328:	005b      	lsls	r3, r3, #1
+ 800132a:	b299      	uxth	r1, r3
+ 800132c:	2364      	movs	r3, #100	@ 0x64
+ 800132e:	9302      	str	r3, [sp, #8]
+ 8001330:	2380      	movs	r3, #128	@ 0x80
+ 8001332:	9301      	str	r3, [sp, #4]
+ 8001334:	1d3b      	adds	r3, r7, #4
+ 8001336:	9300      	str	r3, [sp, #0]
+ 8001338:	2301      	movs	r3, #1
+ 800133a:	2240      	movs	r2, #64	@ 0x40
+ 800133c:	4809      	ldr	r0, [pc, #36]	@ (8001364 <OLED_Clear+0x74>)
+ 800133e:	f002 fa31 	bl	80037a4 <HAL_I2C_Mem_Write>
     for (uint8_t page = 0; page < 8; page++)
- 80011fa:	f897 3087 	ldrb.w	r3, [r7, #135]	@ 0x87
- 80011fe:	3301      	adds	r3, #1
- 8001200:	f887 3087 	strb.w	r3, [r7, #135]	@ 0x87
- 8001204:	f897 3087 	ldrb.w	r3, [r7, #135]	@ 0x87
- 8001208:	2b07      	cmp	r3, #7
- 800120a:	d9da      	bls.n	80011c2 <OLED_Clear+0x1a>
+ 8001342:	f897 3087 	ldrb.w	r3, [r7, #135]	@ 0x87
+ 8001346:	3301      	adds	r3, #1
+ 8001348:	f887 3087 	strb.w	r3, [r7, #135]	@ 0x87
+ 800134c:	f897 3087 	ldrb.w	r3, [r7, #135]	@ 0x87
+ 8001350:	2b07      	cmp	r3, #7
+ 8001352:	d9da      	bls.n	800130a <OLED_Clear+0x1a>
     }
 }
- 800120c:	bf00      	nop
- 800120e:	bf00      	nop
- 8001210:	3788      	adds	r7, #136	@ 0x88
- 8001212:	46bd      	mov	sp, r7
- 8001214:	bd80      	pop	{r7, pc}
- 8001216:	bf00      	nop
- 8001218:	20000000 	.word	0x20000000
- 800121c:	20000224 	.word	0x20000224
+ 8001354:	bf00      	nop
+ 8001356:	bf00      	nop
+ 8001358:	3788      	adds	r7, #136	@ 0x88
+ 800135a:	46bd      	mov	sp, r7
+ 800135c:	bd80      	pop	{r7, pc}
+ 800135e:	bf00      	nop
+ 8001360:	20000000 	.word	0x20000000
+ 8001364:	20000224 	.word	0x20000224
 
-08001220 <OLED_WriteCmd>:
+08001368 <OLED_WriteCmd>:
 
 
 void OLED_WriteCmd(uint8_t cmd)
 {
- 8001220:	b580      	push	{r7, lr}
- 8001222:	b086      	sub	sp, #24
- 8001224:	af04      	add	r7, sp, #16
- 8001226:	4603      	mov	r3, r0
- 8001228:	71fb      	strb	r3, [r7, #7]
+ 8001368:	b580      	push	{r7, lr}
+ 800136a:	b086      	sub	sp, #24
+ 800136c:	af04      	add	r7, sp, #16
+ 800136e:	4603      	mov	r3, r0
+ 8001370:	71fb      	strb	r3, [r7, #7]
     HAL_I2C_Mem_Write(&hi2c1, oled_addr << 1, 0x00, 1, &cmd, 1, 100);
- 800122a:	4b09      	ldr	r3, [pc, #36]	@ (8001250 <OLED_WriteCmd+0x30>)
- 800122c:	781b      	ldrb	r3, [r3, #0]
- 800122e:	005b      	lsls	r3, r3, #1
- 8001230:	b299      	uxth	r1, r3
- 8001232:	2364      	movs	r3, #100	@ 0x64
- 8001234:	9302      	str	r3, [sp, #8]
- 8001236:	2301      	movs	r3, #1
- 8001238:	9301      	str	r3, [sp, #4]
- 800123a:	1dfb      	adds	r3, r7, #7
- 800123c:	9300      	str	r3, [sp, #0]
- 800123e:	2301      	movs	r3, #1
- 8001240:	2200      	movs	r2, #0
- 8001242:	4804      	ldr	r0, [pc, #16]	@ (8001254 <OLED_WriteCmd+0x34>)
- 8001244:	f002 faae 	bl	80037a4 <HAL_I2C_Mem_Write>
+ 8001372:	4b09      	ldr	r3, [pc, #36]	@ (8001398 <OLED_WriteCmd+0x30>)
+ 8001374:	781b      	ldrb	r3, [r3, #0]
+ 8001376:	005b      	lsls	r3, r3, #1
+ 8001378:	b299      	uxth	r1, r3
+ 800137a:	2364      	movs	r3, #100	@ 0x64
+ 800137c:	9302      	str	r3, [sp, #8]
+ 800137e:	2301      	movs	r3, #1
+ 8001380:	9301      	str	r3, [sp, #4]
+ 8001382:	1dfb      	adds	r3, r7, #7
+ 8001384:	9300      	str	r3, [sp, #0]
+ 8001386:	2301      	movs	r3, #1
+ 8001388:	2200      	movs	r2, #0
+ 800138a:	4804      	ldr	r0, [pc, #16]	@ (800139c <OLED_WriteCmd+0x34>)
+ 800138c:	f002 fa0a 	bl	80037a4 <HAL_I2C_Mem_Write>
 }
- 8001248:	bf00      	nop
- 800124a:	3708      	adds	r7, #8
- 800124c:	46bd      	mov	sp, r7
- 800124e:	bd80      	pop	{r7, pc}
- 8001250:	20000000 	.word	0x20000000
- 8001254:	20000224 	.word	0x20000224
+ 8001390:	bf00      	nop
+ 8001392:	3708      	adds	r7, #8
+ 8001394:	46bd      	mov	sp, r7
+ 8001396:	bd80      	pop	{r7, pc}
+ 8001398:	20000000 	.word	0x20000000
+ 800139c:	20000224 	.word	0x20000224
 
-08001258 <OLED_WriteString>:
+080013a0 <OLED_WriteString>:
     HAL_I2C_Mem_Write(&hi2c1, oled_addr << 1, 0x40, 1, data, len, 100);
 }
 
 
 void OLED_WriteString(char *str)
 {
- 8001258:	b580      	push	{r7, lr}
- 800125a:	b088      	sub	sp, #32
- 800125c:	af04      	add	r7, sp, #16
- 800125e:	6078      	str	r0, [r7, #4]
+ 80013a0:	b580      	push	{r7, lr}
+ 80013a2:	b088      	sub	sp, #32
+ 80013a4:	af04      	add	r7, sp, #16
+ 80013a6:	6078      	str	r0, [r7, #4]
     uint8_t x = 0;  // 水平位置（0~127）
- 8001260:	2300      	movs	r3, #0
- 8001262:	73fb      	strb	r3, [r7, #15]
+ 80013a8:	2300      	movs	r3, #0
+ 80013aa:	73fb      	strb	r3, [r7, #15]
     uint8_t y = 0;  // 頁面（0~7）
- 8001264:	2300      	movs	r3, #0
- 8001266:	73bb      	strb	r3, [r7, #14]
+ 80013ac:	2300      	movs	r3, #0
+ 80013ae:	73bb      	strb	r3, [r7, #14]
 
     while (*str)
- 8001268:	e070      	b.n	800134c <OLED_WriteString+0xf4>
+ 80013b0:	e070      	b.n	8001494 <OLED_WriteString+0xf4>
     {
         if (*str=='\n')  // ASCII 碼 10
- 800126a:	687b      	ldr	r3, [r7, #4]
- 800126c:	781b      	ldrb	r3, [r3, #0]
- 800126e:	2b0a      	cmp	r3, #10
- 8001270:	d120      	bne.n	80012b4 <OLED_WriteString+0x5c>
+ 80013b2:	687b      	ldr	r3, [r7, #4]
+ 80013b4:	781b      	ldrb	r3, [r3, #0]
+ 80013b6:	2b0a      	cmp	r3, #10
+ 80013b8:	d120      	bne.n	80013fc <OLED_WriteString+0x5c>
             {
                 x = 0;          // X 回到最左邊
- 8001272:	2300      	movs	r3, #0
- 8001274:	73fb      	strb	r3, [r7, #15]
+ 80013ba:	2300      	movs	r3, #0
+ 80013bc:	73fb      	strb	r3, [r7, #15]
                 y++;            // Y 往下移一行（頁面 +1）
- 8001276:	7bbb      	ldrb	r3, [r7, #14]
- 8001278:	3301      	adds	r3, #1
- 800127a:	73bb      	strb	r3, [r7, #14]
+ 80013be:	7bbb      	ldrb	r3, [r7, #14]
+ 80013c0:	3301      	adds	r3, #1
+ 80013c2:	73bb      	strb	r3, [r7, #14]
 
                 if (y>7)      // 超過最後一頁（第 7 頁）
- 800127c:	7bbb      	ldrb	r3, [r7, #14]
- 800127e:	2b07      	cmp	r3, #7
- 8001280:	d869      	bhi.n	8001356 <OLED_WriteString+0xfe>
+ 80013c4:	7bbb      	ldrb	r3, [r7, #14]
+ 80013c6:	2b07      	cmp	r3, #7
+ 80013c8:	d869      	bhi.n	800149e <OLED_WriteString+0xfe>
                 {
                     break;      // 寫滿了就停止（或你可以改成從頭覆蓋）
                 }
 
                 // 把硬體游標移動到新的 (x, y) 位置
                 OLED_WriteCmd(0xB0+y);           // 設定頁面
- 8001282:	7bbb      	ldrb	r3, [r7, #14]
- 8001284:	3b50      	subs	r3, #80	@ 0x50
- 8001286:	b2db      	uxtb	r3, r3
- 8001288:	4618      	mov	r0, r3
- 800128a:	f7ff ffc9 	bl	8001220 <OLED_WriteCmd>
+ 80013ca:	7bbb      	ldrb	r3, [r7, #14]
+ 80013cc:	3b50      	subs	r3, #80	@ 0x50
+ 80013ce:	b2db      	uxtb	r3, r3
+ 80013d0:	4618      	mov	r0, r3
+ 80013d2:	f7ff ffc9 	bl	8001368 <OLED_WriteCmd>
                 OLED_WriteCmd(0x00+(x&0x0F));  // 設定低 4 位列位址
- 800128e:	7bfb      	ldrb	r3, [r7, #15]
- 8001290:	f003 030f 	and.w	r3, r3, #15
- 8001294:	b2db      	uxtb	r3, r3
- 8001296:	4618      	mov	r0, r3
- 8001298:	f7ff ffc2 	bl	8001220 <OLED_WriteCmd>
+ 80013d6:	7bfb      	ldrb	r3, [r7, #15]
+ 80013d8:	f003 030f 	and.w	r3, r3, #15
+ 80013dc:	b2db      	uxtb	r3, r3
+ 80013de:	4618      	mov	r0, r3
+ 80013e0:	f7ff ffc2 	bl	8001368 <OLED_WriteCmd>
                 OLED_WriteCmd(0x10+((x>>4)&0x0F)); // 設定高 4 位列位址
- 800129c:	7bfb      	ldrb	r3, [r7, #15]
- 800129e:	091b      	lsrs	r3, r3, #4
- 80012a0:	b2db      	uxtb	r3, r3
- 80012a2:	3310      	adds	r3, #16
- 80012a4:	b2db      	uxtb	r3, r3
- 80012a6:	4618      	mov	r0, r3
- 80012a8:	f7ff ffba 	bl	8001220 <OLED_WriteCmd>
+ 80013e4:	7bfb      	ldrb	r3, [r7, #15]
+ 80013e6:	091b      	lsrs	r3, r3, #4
+ 80013e8:	b2db      	uxtb	r3, r3
+ 80013ea:	3310      	adds	r3, #16
+ 80013ec:	b2db      	uxtb	r3, r3
+ 80013ee:	4618      	mov	r0, r3
+ 80013f0:	f7ff ffba 	bl	8001368 <OLED_WriteCmd>
 
                 str++;  // 跳過 \n，繼續處理下一個字元
- 80012ac:	687b      	ldr	r3, [r7, #4]
- 80012ae:	3301      	adds	r3, #1
- 80012b0:	607b      	str	r3, [r7, #4]
+ 80013f4:	687b      	ldr	r3, [r7, #4]
+ 80013f6:	3301      	adds	r3, #1
+ 80013f8:	607b      	str	r3, [r7, #4]
                 continue;  // 回到 while 開頭
- 80012b2:	e04b      	b.n	800134c <OLED_WriteString+0xf4>
+ 80013fa:	e04b      	b.n	8001494 <OLED_WriteString+0xf4>
             }
     	// 只處理 ASCII 32~127
         if (*str<32||*str>127)
- 80012b4:	687b      	ldr	r3, [r7, #4]
- 80012b6:	781b      	ldrb	r3, [r3, #0]
- 80012b8:	2b1f      	cmp	r3, #31
- 80012ba:	d904      	bls.n	80012c6 <OLED_WriteString+0x6e>
- 80012bc:	687b      	ldr	r3, [r7, #4]
- 80012be:	781b      	ldrb	r3, [r3, #0]
- 80012c0:	b25b      	sxtb	r3, r3
- 80012c2:	2b00      	cmp	r3, #0
- 80012c4:	da03      	bge.n	80012ce <OLED_WriteString+0x76>
+ 80013fc:	687b      	ldr	r3, [r7, #4]
+ 80013fe:	781b      	ldrb	r3, [r3, #0]
+ 8001400:	2b1f      	cmp	r3, #31
+ 8001402:	d904      	bls.n	800140e <OLED_WriteString+0x6e>
+ 8001404:	687b      	ldr	r3, [r7, #4]
+ 8001406:	781b      	ldrb	r3, [r3, #0]
+ 8001408:	b25b      	sxtb	r3, r3
+ 800140a:	2b00      	cmp	r3, #0
+ 800140c:	da03      	bge.n	8001416 <OLED_WriteString+0x76>
         {
             str++;
- 80012c6:	687b      	ldr	r3, [r7, #4]
- 80012c8:	3301      	adds	r3, #1
- 80012ca:	607b      	str	r3, [r7, #4]
+ 800140e:	687b      	ldr	r3, [r7, #4]
+ 8001410:	3301      	adds	r3, #1
+ 8001412:	607b      	str	r3, [r7, #4]
             continue;
- 80012cc:	e03e      	b.n	800134c <OLED_WriteString+0xf4>
+ 8001414:	e03e      	b.n	8001494 <OLED_WriteString+0xf4>
         }
 
         // 設定游標位置（頁面 y，列 x）
         OLED_WriteCmd(0xB0+y);
- 80012ce:	7bbb      	ldrb	r3, [r7, #14]
- 80012d0:	3b50      	subs	r3, #80	@ 0x50
- 80012d2:	b2db      	uxtb	r3, r3
- 80012d4:	4618      	mov	r0, r3
- 80012d6:	f7ff ffa3 	bl	8001220 <OLED_WriteCmd>
+ 8001416:	7bbb      	ldrb	r3, [r7, #14]
+ 8001418:	3b50      	subs	r3, #80	@ 0x50
+ 800141a:	b2db      	uxtb	r3, r3
+ 800141c:	4618      	mov	r0, r3
+ 800141e:	f7ff ffa3 	bl	8001368 <OLED_WriteCmd>
         OLED_WriteCmd(0x00+(x&0x0F));
- 80012da:	7bfb      	ldrb	r3, [r7, #15]
- 80012dc:	f003 030f 	and.w	r3, r3, #15
- 80012e0:	b2db      	uxtb	r3, r3
- 80012e2:	4618      	mov	r0, r3
- 80012e4:	f7ff ff9c 	bl	8001220 <OLED_WriteCmd>
+ 8001422:	7bfb      	ldrb	r3, [r7, #15]
+ 8001424:	f003 030f 	and.w	r3, r3, #15
+ 8001428:	b2db      	uxtb	r3, r3
+ 800142a:	4618      	mov	r0, r3
+ 800142c:	f7ff ff9c 	bl	8001368 <OLED_WriteCmd>
         OLED_WriteCmd(0x10+((x>>4)&0x0F));
- 80012e8:	7bfb      	ldrb	r3, [r7, #15]
- 80012ea:	091b      	lsrs	r3, r3, #4
- 80012ec:	b2db      	uxtb	r3, r3
- 80012ee:	3310      	adds	r3, #16
- 80012f0:	b2db      	uxtb	r3, r3
- 80012f2:	4618      	mov	r0, r3
- 80012f4:	f7ff ff94 	bl	8001220 <OLED_WriteCmd>
+ 8001430:	7bfb      	ldrb	r3, [r7, #15]
+ 8001432:	091b      	lsrs	r3, r3, #4
+ 8001434:	b2db      	uxtb	r3, r3
+ 8001436:	3310      	adds	r3, #16
+ 8001438:	b2db      	uxtb	r3, r3
+ 800143a:	4618      	mov	r0, r3
+ 800143c:	f7ff ff94 	bl	8001368 <OLED_WriteCmd>
 
         // 取得字型點陣（5 個位元組）
         const uint8_t *glyph=Font5x7[*str-32];
- 80012f8:	687b      	ldr	r3, [r7, #4]
- 80012fa:	781b      	ldrb	r3, [r3, #0]
- 80012fc:	f1a3 0220 	sub.w	r2, r3, #32
- 8001300:	4613      	mov	r3, r2
- 8001302:	009b      	lsls	r3, r3, #2
- 8001304:	4413      	add	r3, r2
- 8001306:	4a17      	ldr	r2, [pc, #92]	@ (8001364 <OLED_WriteString+0x10c>)
- 8001308:	4413      	add	r3, r2
- 800130a:	60bb      	str	r3, [r7, #8]
+ 8001440:	687b      	ldr	r3, [r7, #4]
+ 8001442:	781b      	ldrb	r3, [r3, #0]
+ 8001444:	f1a3 0220 	sub.w	r2, r3, #32
+ 8001448:	4613      	mov	r3, r2
+ 800144a:	009b      	lsls	r3, r3, #2
+ 800144c:	4413      	add	r3, r2
+ 800144e:	4a17      	ldr	r2, [pc, #92]	@ (80014ac <OLED_WriteString+0x10c>)
+ 8001450:	4413      	add	r3, r2
+ 8001452:	60bb      	str	r3, [r7, #8]
         // 寫入顯存（連續 5 個位元組）
         HAL_I2C_Mem_Write(&hi2c1,oled_addr<<1,0x40,1,(uint8_t*)glyph,5,100);
- 800130c:	4b16      	ldr	r3, [pc, #88]	@ (8001368 <OLED_WriteString+0x110>)
- 800130e:	781b      	ldrb	r3, [r3, #0]
- 8001310:	005b      	lsls	r3, r3, #1
- 8001312:	b299      	uxth	r1, r3
- 8001314:	2364      	movs	r3, #100	@ 0x64
- 8001316:	9302      	str	r3, [sp, #8]
- 8001318:	2305      	movs	r3, #5
- 800131a:	9301      	str	r3, [sp, #4]
- 800131c:	68bb      	ldr	r3, [r7, #8]
- 800131e:	9300      	str	r3, [sp, #0]
- 8001320:	2301      	movs	r3, #1
- 8001322:	2240      	movs	r2, #64	@ 0x40
- 8001324:	4811      	ldr	r0, [pc, #68]	@ (800136c <OLED_WriteString+0x114>)
- 8001326:	f002 fa3d 	bl	80037a4 <HAL_I2C_Mem_Write>
+ 8001454:	4b16      	ldr	r3, [pc, #88]	@ (80014b0 <OLED_WriteString+0x110>)
+ 8001456:	781b      	ldrb	r3, [r3, #0]
+ 8001458:	005b      	lsls	r3, r3, #1
+ 800145a:	b299      	uxth	r1, r3
+ 800145c:	2364      	movs	r3, #100	@ 0x64
+ 800145e:	9302      	str	r3, [sp, #8]
+ 8001460:	2305      	movs	r3, #5
+ 8001462:	9301      	str	r3, [sp, #4]
+ 8001464:	68bb      	ldr	r3, [r7, #8]
+ 8001466:	9300      	str	r3, [sp, #0]
+ 8001468:	2301      	movs	r3, #1
+ 800146a:	2240      	movs	r2, #64	@ 0x40
+ 800146c:	4811      	ldr	r0, [pc, #68]	@ (80014b4 <OLED_WriteString+0x114>)
+ 800146e:	f002 f999 	bl	80037a4 <HAL_I2C_Mem_Write>
 
         x += 6;  // 每個字元佔 6 像素寬（5 點陣 + 1 間隔）
- 800132a:	7bfb      	ldrb	r3, [r7, #15]
- 800132c:	3306      	adds	r3, #6
- 800132e:	73fb      	strb	r3, [r7, #15]
+ 8001472:	7bfb      	ldrb	r3, [r7, #15]
+ 8001474:	3306      	adds	r3, #6
+ 8001476:	73fb      	strb	r3, [r7, #15]
         if (x>128 - 6)  // 超過寬度就換行
- 8001330:	7bfb      	ldrb	r3, [r7, #15]
- 8001332:	2b7a      	cmp	r3, #122	@ 0x7a
- 8001334:	d907      	bls.n	8001346 <OLED_WriteString+0xee>
+ 8001478:	7bfb      	ldrb	r3, [r7, #15]
+ 800147a:	2b7a      	cmp	r3, #122	@ 0x7a
+ 800147c:	d907      	bls.n	800148e <OLED_WriteString+0xee>
         {
             x=0;
- 8001336:	2300      	movs	r3, #0
- 8001338:	73fb      	strb	r3, [r7, #15]
+ 800147e:	2300      	movs	r3, #0
+ 8001480:	73fb      	strb	r3, [r7, #15]
             y++;
- 800133a:	7bbb      	ldrb	r3, [r7, #14]
- 800133c:	3301      	adds	r3, #1
- 800133e:	73bb      	strb	r3, [r7, #14]
+ 8001482:	7bbb      	ldrb	r3, [r7, #14]
+ 8001484:	3301      	adds	r3, #1
+ 8001486:	73bb      	strb	r3, [r7, #14]
             if (y>7) break;  // 超過頁面就停止
- 8001340:	7bbb      	ldrb	r3, [r7, #14]
- 8001342:	2b07      	cmp	r3, #7
- 8001344:	d809      	bhi.n	800135a <OLED_WriteString+0x102>
+ 8001488:	7bbb      	ldrb	r3, [r7, #14]
+ 800148a:	2b07      	cmp	r3, #7
+ 800148c:	d809      	bhi.n	80014a2 <OLED_WriteString+0x102>
         }
         str++;
- 8001346:	687b      	ldr	r3, [r7, #4]
- 8001348:	3301      	adds	r3, #1
- 800134a:	607b      	str	r3, [r7, #4]
+ 800148e:	687b      	ldr	r3, [r7, #4]
+ 8001490:	3301      	adds	r3, #1
+ 8001492:	607b      	str	r3, [r7, #4]
     while (*str)
- 800134c:	687b      	ldr	r3, [r7, #4]
- 800134e:	781b      	ldrb	r3, [r3, #0]
- 8001350:	2b00      	cmp	r3, #0
- 8001352:	d18a      	bne.n	800126a <OLED_WriteString+0x12>
+ 8001494:	687b      	ldr	r3, [r7, #4]
+ 8001496:	781b      	ldrb	r3, [r3, #0]
+ 8001498:	2b00      	cmp	r3, #0
+ 800149a:	d18a      	bne.n	80013b2 <OLED_WriteString+0x12>
     }
 }
- 8001354:	e002      	b.n	800135c <OLED_WriteString+0x104>
+ 800149c:	e002      	b.n	80014a4 <OLED_WriteString+0x104>
                     break;      // 寫滿了就停止（或你可以改成從頭覆蓋）
- 8001356:	bf00      	nop
- 8001358:	e000      	b.n	800135c <OLED_WriteString+0x104>
+ 800149e:	bf00      	nop
+ 80014a0:	e000      	b.n	80014a4 <OLED_WriteString+0x104>
             if (y>7) break;  // 超過頁面就停止
- 800135a:	bf00      	nop
+ 80014a2:	bf00      	nop
 }
- 800135c:	bf00      	nop
- 800135e:	3710      	adds	r7, #16
- 8001360:	46bd      	mov	sp, r7
- 8001362:	bd80      	pop	{r7, pc}
- 8001364:	080099f0 	.word	0x080099f0
- 8001368:	20000000 	.word	0x20000000
- 800136c:	20000224 	.word	0x20000224
+ 80014a4:	bf00      	nop
+ 80014a6:	3710      	adds	r7, #16
+ 80014a8:	46bd      	mov	sp, r7
+ 80014aa:	bd80      	pop	{r7, pc}
+ 80014ac:	080099f0 	.word	0x080099f0
+ 80014b0:	20000000 	.word	0x20000000
+ 80014b4:	20000224 	.word	0x20000224
 
-08001370 <HAL_UART_TxCpltCallback>:
+080014b8 <HAL_UART_TxCpltCallback>:
 
 
 
 volatile uint8_t uart_tx_done = 1;
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
- 8001370:	b480      	push	{r7}
- 8001372:	b083      	sub	sp, #12
- 8001374:	af00      	add	r7, sp, #0
- 8001376:	6078      	str	r0, [r7, #4]
+ 80014b8:	b480      	push	{r7}
+ 80014ba:	b083      	sub	sp, #12
+ 80014bc:	af00      	add	r7, sp, #0
+ 80014be:	6078      	str	r0, [r7, #4]
 	 if (huart->Instance == USART1)
- 8001378:	687b      	ldr	r3, [r7, #4]
- 800137a:	681b      	ldr	r3, [r3, #0]
- 800137c:	4a05      	ldr	r2, [pc, #20]	@ (8001394 <HAL_UART_TxCpltCallback+0x24>)
- 800137e:	4293      	cmp	r3, r2
- 8001380:	d102      	bne.n	8001388 <HAL_UART_TxCpltCallback+0x18>
+ 80014c0:	687b      	ldr	r3, [r7, #4]
+ 80014c2:	681b      	ldr	r3, [r3, #0]
+ 80014c4:	4a05      	ldr	r2, [pc, #20]	@ (80014dc <HAL_UART_TxCpltCallback+0x24>)
+ 80014c6:	4293      	cmp	r3, r2
+ 80014c8:	d102      	bne.n	80014d0 <HAL_UART_TxCpltCallback+0x18>
 	    {
 	        uart_tx_done = 1;  // 傳送完成，標記為空閒
- 8001382:	4b05      	ldr	r3, [pc, #20]	@ (8001398 <HAL_UART_TxCpltCallback+0x28>)
- 8001384:	2201      	movs	r2, #1
- 8001386:	701a      	strb	r2, [r3, #0]
+ 80014ca:	4b05      	ldr	r3, [pc, #20]	@ (80014e0 <HAL_UART_TxCpltCallback+0x28>)
+ 80014cc:	2201      	movs	r2, #1
+ 80014ce:	701a      	strb	r2, [r3, #0]
 	    }
 }
- 8001388:	bf00      	nop
- 800138a:	370c      	adds	r7, #12
- 800138c:	46bd      	mov	sp, r7
- 800138e:	bc80      	pop	{r7}
- 8001390:	4770      	bx	lr
- 8001392:	bf00      	nop
- 8001394:	40013800 	.word	0x40013800
- 8001398:	20000001 	.word	0x20000001
-
-0800139c <ADC_Read_Channel>:
-
-
-/*  ADC彙整  */
-// 讀取指定的ADC通道
-uint32_t ADC_Read_Channel(uint32_t channel)
-{
- 800139c:	b580      	push	{r7, lr}
- 800139e:	b086      	sub	sp, #24
- 80013a0:	af00      	add	r7, sp, #0
- 80013a2:	6078      	str	r0, [r7, #4]
-    ADC_ChannelConfTypeDef sConfig={0};
- 80013a4:	f107 030c 	add.w	r3, r7, #12
- 80013a8:	2200      	movs	r2, #0
- 80013aa:	601a      	str	r2, [r3, #0]
- 80013ac:	605a      	str	r2, [r3, #4]
- 80013ae:	609a      	str	r2, [r3, #8]
-
-    // 設定要讀取的通道
-    sConfig.Channel=channel;
- 80013b0:	687b      	ldr	r3, [r7, #4]
- 80013b2:	60fb      	str	r3, [r7, #12]
-    sConfig.Rank=1;
- 80013b4:	2301      	movs	r3, #1
- 80013b6:	613b      	str	r3, [r7, #16]
-    sConfig.SamplingTime=ADC_SAMPLETIME_13CYCLES_5;
- 80013b8:	2302      	movs	r3, #2
- 80013ba:	617b      	str	r3, [r7, #20]
-
-    if (HAL_ADC_ConfigChannel(&hadc1,&sConfig)!=HAL_OK)
- 80013bc:	f107 030c 	add.w	r3, r7, #12
- 80013c0:	4619      	mov	r1, r3
- 80013c2:	480e      	ldr	r0, [pc, #56]	@ (80013fc <ADC_Read_Channel+0x60>)
- 80013c4:	f001 fb94 	bl	8002af0 <HAL_ADC_ConfigChannel>
- 80013c8:	4603      	mov	r3, r0
- 80013ca:	2b00      	cmp	r3, #0
- 80013cc:	d001      	beq.n	80013d2 <ADC_Read_Channel+0x36>
-    {
-        return 0;
- 80013ce:	2300      	movs	r3, #0
- 80013d0:	e00f      	b.n	80013f2 <ADC_Read_Channel+0x56>
-    }
-
-    HAL_ADC_Start(&hadc1);
- 80013d2:	480a      	ldr	r0, [pc, #40]	@ (80013fc <ADC_Read_Channel+0x60>)
- 80013d4:	f001 f9cc 	bl	8002770 <HAL_ADC_Start>
-    if (HAL_ADC_PollForConversion(&hadc1,100)==HAL_OK)
- 80013d8:	2164      	movs	r1, #100	@ 0x64
- 80013da:	4808      	ldr	r0, [pc, #32]	@ (80013fc <ADC_Read_Channel+0x60>)
- 80013dc:	f001 fa76 	bl	80028cc <HAL_ADC_PollForConversion>
- 80013e0:	4603      	mov	r3, r0
- 80013e2:	2b00      	cmp	r3, #0
- 80013e4:	d104      	bne.n	80013f0 <ADC_Read_Channel+0x54>
-    {
-        return HAL_ADC_GetValue(&hadc1);
- 80013e6:	4805      	ldr	r0, [pc, #20]	@ (80013fc <ADC_Read_Channel+0x60>)
- 80013e8:	f001 fb76 	bl	8002ad8 <HAL_ADC_GetValue>
- 80013ec:	4603      	mov	r3, r0
- 80013ee:	e000      	b.n	80013f2 <ADC_Read_Channel+0x56>
-    }
-    return 0;
- 80013f0:	2300      	movs	r3, #0
-}
- 80013f2:	4618      	mov	r0, r3
- 80013f4:	3718      	adds	r7, #24
- 80013f6:	46bd      	mov	sp, r7
- 80013f8:	bd80      	pop	{r7, pc}
- 80013fa:	bf00      	nop
- 80013fc:	200001f4 	.word	0x200001f4
-
-08001400 <Thermistor_GetTemperature>:
-
-/*  熱換算  */
-float Thermistor_GetTemperature(uint32_t adc_value)
-{
- 8001400:	b5b0      	push	{r4, r5, r7, lr}
- 8001402:	b08a      	sub	sp, #40	@ 0x28
- 8001404:	af00      	add	r7, sp, #0
- 8001406:	6078      	str	r0, [r7, #4]
-    // 1. 計算電壓
-    float voltage = adc_value * 3.3f / 4096.0f;
- 8001408:	6878      	ldr	r0, [r7, #4]
- 800140a:	f7ff fc43 	bl	8000c94 <__aeabi_ui2f>
- 800140e:	4603      	mov	r3, r0
- 8001410:	492e      	ldr	r1, [pc, #184]	@ (80014cc <Thermistor_GetTemperature+0xcc>)
- 8001412:	4618      	mov	r0, r3
- 8001414:	f7ff fc96 	bl	8000d44 <__aeabi_fmul>
- 8001418:	4603      	mov	r3, r0
- 800141a:	f04f 418b 	mov.w	r1, #1166016512	@ 0x45800000
- 800141e:	4618      	mov	r0, r3
- 8001420:	f7ff fd44 	bl	8000eac <__aeabi_fdiv>
- 8001424:	4603      	mov	r3, r0
- 8001426:	627b      	str	r3, [r7, #36]	@ 0x24
-
-    // 2. 計算熱敏電阻的電阻值（假設分壓電阻 = 10kΩ）
-    float r_fixed = 10000.0f;          // 固定電阻（模組上的）
- 8001428:	4b29      	ldr	r3, [pc, #164]	@ (80014d0 <Thermistor_GetTemperature+0xd0>)
- 800142a:	623b      	str	r3, [r7, #32]
-    float r_ntc = (voltage * r_fixed) / (3.3f - voltage);
- 800142c:	6a39      	ldr	r1, [r7, #32]
- 800142e:	6a78      	ldr	r0, [r7, #36]	@ 0x24
- 8001430:	f7ff fc88 	bl	8000d44 <__aeabi_fmul>
- 8001434:	4603      	mov	r3, r0
- 8001436:	461c      	mov	r4, r3
- 8001438:	6a79      	ldr	r1, [r7, #36]	@ 0x24
- 800143a:	4824      	ldr	r0, [pc, #144]	@ (80014cc <Thermistor_GetTemperature+0xcc>)
- 800143c:	f7ff fb78 	bl	8000b30 <__aeabi_fsub>
- 8001440:	4603      	mov	r3, r0
- 8001442:	4619      	mov	r1, r3
- 8001444:	4620      	mov	r0, r4
- 8001446:	f7ff fd31 	bl	8000eac <__aeabi_fdiv>
- 800144a:	4603      	mov	r3, r0
- 800144c:	61fb      	str	r3, [r7, #28]
-
-    // 3. 用 Steinhart-Hart 計算溫度（B = 3950, R0 = 10000Ω @ 25°C）
-    float t0 = 298.15f;                // 25°C = 298.15 K
- 800144e:	4b21      	ldr	r3, [pc, #132]	@ (80014d4 <Thermistor_GetTemperature+0xd4>)
- 8001450:	61bb      	str	r3, [r7, #24]
-    float r0 = 10000.0f;               // 25°C 時的電阻值
- 8001452:	4b1f      	ldr	r3, [pc, #124]	@ (80014d0 <Thermistor_GetTemperature+0xd0>)
- 8001454:	617b      	str	r3, [r7, #20]
-    float b_value = 3950.0f;           // NTC 的 B 值（常見）
- 8001456:	4b20      	ldr	r3, [pc, #128]	@ (80014d8 <Thermistor_GetTemperature+0xd8>)
- 8001458:	613b      	str	r3, [r7, #16]
-
-    float temp_k = 1.0f / (1.0f/t0 + (1.0f/b_value) * logf(r_ntc / r0));
- 800145a:	69b9      	ldr	r1, [r7, #24]
- 800145c:	f04f 507e 	mov.w	r0, #1065353216	@ 0x3f800000
- 8001460:	f7ff fd24 	bl	8000eac <__aeabi_fdiv>
- 8001464:	4603      	mov	r3, r0
- 8001466:	461c      	mov	r4, r3
- 8001468:	6939      	ldr	r1, [r7, #16]
- 800146a:	f04f 507e 	mov.w	r0, #1065353216	@ 0x3f800000
- 800146e:	f7ff fd1d 	bl	8000eac <__aeabi_fdiv>
- 8001472:	4603      	mov	r3, r0
- 8001474:	461d      	mov	r5, r3
- 8001476:	6979      	ldr	r1, [r7, #20]
- 8001478:	69f8      	ldr	r0, [r7, #28]
- 800147a:	f7ff fd17 	bl	8000eac <__aeabi_fdiv>
- 800147e:	4603      	mov	r3, r0
- 8001480:	4618      	mov	r0, r3
- 8001482:	f007 fd33 	bl	8008eec <logf>
- 8001486:	4603      	mov	r3, r0
- 8001488:	4619      	mov	r1, r3
- 800148a:	4628      	mov	r0, r5
- 800148c:	f7ff fc5a 	bl	8000d44 <__aeabi_fmul>
- 8001490:	4603      	mov	r3, r0
- 8001492:	4619      	mov	r1, r3
- 8001494:	4620      	mov	r0, r4
- 8001496:	f7ff fb4d 	bl	8000b34 <__addsf3>
- 800149a:	4603      	mov	r3, r0
- 800149c:	4619      	mov	r1, r3
- 800149e:	f04f 507e 	mov.w	r0, #1065353216	@ 0x3f800000
- 80014a2:	f7ff fd03 	bl	8000eac <__aeabi_fdiv>
- 80014a6:	4603      	mov	r3, r0
- 80014a8:	60fb      	str	r3, [r7, #12]
-    float temp_c = temp_k - 273.15f;   // 轉換成攝氏
- 80014aa:	490c      	ldr	r1, [pc, #48]	@ (80014dc <Thermistor_GetTemperature+0xdc>)
- 80014ac:	68f8      	ldr	r0, [r7, #12]
- 80014ae:	f7ff fb3f 	bl	8000b30 <__aeabi_fsub>
- 80014b2:	4603      	mov	r3, r0
- 80014b4:	60bb      	str	r3, [r7, #8]
-    temp_c=temp_c-19.4f;
- 80014b6:	490a      	ldr	r1, [pc, #40]	@ (80014e0 <Thermistor_GetTemperature+0xe0>)
- 80014b8:	68b8      	ldr	r0, [r7, #8]
- 80014ba:	f7ff fb39 	bl	8000b30 <__aeabi_fsub>
- 80014be:	4603      	mov	r3, r0
- 80014c0:	60bb      	str	r3, [r7, #8]
-    return temp_c;
- 80014c2:	68bb      	ldr	r3, [r7, #8]
-}
- 80014c4:	4618      	mov	r0, r3
- 80014c6:	3728      	adds	r7, #40	@ 0x28
- 80014c8:	46bd      	mov	sp, r7
- 80014ca:	bdb0      	pop	{r4, r5, r7, pc}
- 80014cc:	40533333 	.word	0x40533333
- 80014d0:	461c4000 	.word	0x461c4000
- 80014d4:	43951333 	.word	0x43951333
- 80014d8:	4576e000 	.word	0x4576e000
- 80014dc:	43889333 	.word	0x43889333
- 80014e0:	419b3333 	.word	0x419b3333
+ 80014d0:	bf00      	nop
+ 80014d2:	370c      	adds	r7, #12
+ 80014d4:	46bd      	mov	sp, r7
+ 80014d6:	bc80      	pop	{r7}
+ 80014d8:	4770      	bx	lr
+ 80014da:	bf00      	nop
+ 80014dc:	40013800 	.word	0x40013800
+ 80014e0:	20000001 	.word	0x20000001
 
 080014e4 <UART_SendString>:
-/*  熱換算  */
-/*  ADC彙整  */
+
+
+
 void UART_SendString(char *str)
 	    {
  80014e4:	b580      	push	{r7, lr}
@@ -2506,7 +2507,7 @@ int main(void)
  80017ce:	d037      	beq.n	8001840 <main+0x98>
   {
       OLED_Init();           // 初始化 OLED
- 80017d0:	f7ff fc94 	bl	80010fc <OLED_Init>
+ 80017d0:	f7ff fd38 	bl	8001244 <OLED_Init>
 
 
 
@@ -2565,7 +2566,7 @@ int main(void)
 
 
       OLED_Clear();          //清除螢幕全暗
- 800183c:	f7ff fcb4 	bl	80011a8 <OLED_Clear>
+ 800183c:	f7ff fd58 	bl	80012f0 <OLED_Clear>
   }
 
 
@@ -2735,7 +2736,7 @@ int main(void)
  8001958:	d001      	beq.n	800195e <main+0x1b6>
   {
       OLED_Init();    // 初始化 OLED
- 800195a:	f7ff fbcf 	bl	80010fc <OLED_Init>
+ 800195a:	f7ff fc73 	bl	8001244 <OLED_Init>
   }
 
 /* 陀螺儀校準 */
@@ -2754,7 +2755,7 @@ int main(void)
 /* ADC彙整 */
 	  uint32_t light_adc=ADC_Read_Channel(ADC_CHANNEL_0);
  800196e:	2000      	movs	r0, #0
- 8001970:	f7ff fd14 	bl	800139c <ADC_Read_Channel>
+ 8001970:	f7ff fbc4 	bl	80010fc <ADC_Read_Channel>
  8001974:	f8c7 00c4 	str.w	r0, [r7, #196]	@ 0xc4
 	    float light_voltage =light_adc*3.3f/4096.0f;
  8001978:	f8d7 00c4 	ldr.w	r0, [r7, #196]	@ 0xc4
@@ -2772,11 +2773,11 @@ int main(void)
 /*     光敏/熱敏      */
 	    uint32_t temp_adc=ADC_Read_Channel(ADC_CHANNEL_1);
  800199c:	2001      	movs	r0, #1
- 800199e:	f7ff fcfd 	bl	800139c <ADC_Read_Channel>
+ 800199e:	f7ff fbad 	bl	80010fc <ADC_Read_Channel>
  80019a2:	f8c7 00bc 	str.w	r0, [r7, #188]	@ 0xbc
 	      float temperature=Thermistor_GetTemperature(temp_adc);
  80019a6:	f8d7 00bc 	ldr.w	r0, [r7, #188]	@ 0xbc
- 80019aa:	f7ff fd29 	bl	8001400 <Thermistor_GetTemperature>
+ 80019aa:	f7ff fbd9 	bl	8001160 <Thermistor_GetTemperature>
  80019ae:	f8c7 00b8 	str.w	r0, [r7, #184]	@ 0xb8
   /* ADC彙整 */
   /* TTL  */
@@ -3136,11 +3137,11 @@ pitch=ALPHA*pitch+(1.0f-ALPHA)*accel_pitch;
  8001d00:	4914      	ldr	r1, [pc, #80]	@ (8001d54 <main+0x5ac>)
  8001d02:	f004 ff7b 	bl	8006bfc <siprintf>
    OLED_Clear();
- 8001d06:	f7ff fa4f 	bl	80011a8 <OLED_Clear>
+ 8001d06:	f7ff faf3 	bl	80012f0 <OLED_Clear>
    OLED_WriteString(oled_buf);
  8001d0a:	463b      	mov	r3, r7
  8001d0c:	4618      	mov	r0, r3
- 8001d0e:	f7ff faa3 	bl	8001258 <OLED_WriteString>
+ 8001d0e:	f7ff fb47 	bl	80013a0 <OLED_WriteString>
 
    HAL_Delay(100);
  8001d12:	2064      	movs	r0, #100	@ 0x64
@@ -14887,7 +14888,7 @@ static HAL_StatusTypeDef UART_EndTransmit_IT(UART_HandleTypeDef *huart)
   /*Call legacy weak Tx complete callback*/
   HAL_UART_TxCpltCallback(huart);
  8005f06:	6878      	ldr	r0, [r7, #4]
- 8005f08:	f7fb fa32 	bl	8001370 <HAL_UART_TxCpltCallback>
+ 8005f08:	f7fb fad6 	bl	80014b8 <HAL_UART_TxCpltCallback>
 #endif /* USE_HAL_UART_REGISTER_CALLBACKS */
 
   return HAL_OK;

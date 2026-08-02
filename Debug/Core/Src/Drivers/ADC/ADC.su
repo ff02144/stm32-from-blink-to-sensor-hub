@@ -1,0 +1,2 @@
+../Core/Src/Drivers/ADC/ADC.c:4:10:ADC_Read_Channel	32	static
+../Core/Src/Drivers/ADC/ADC.c:28:7:Thermistor_GetTemperature	56	static

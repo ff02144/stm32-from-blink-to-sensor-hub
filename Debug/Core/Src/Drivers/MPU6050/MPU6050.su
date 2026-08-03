@@ -1,0 +1,4 @@
+../Core/Src/Drivers/MPU6050/MPU6050.c:3:6:MPU6050_ReadAccel	48	static
+../Core/Src/Drivers/MPU6050/MPU6050.c:15:6:MPU6050_ReadGyro	48	static
+../Core/Src/Drivers/MPU6050/MPU6050.c:26:6:MPU6050_InitAngles	112	static
+../Core/Src/Drivers/MPU6050/MPU6050.c:46:6:MPU6050_CalibrateGyro	104	static

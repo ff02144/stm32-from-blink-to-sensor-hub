@@ -23,6 +23,7 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Core/Src/Drivers/ADC \
+Core/Src/Drivers/MPU6050 \
 Core/Src/Drivers/OLED \
 Core/Src \
 Core/Startup \

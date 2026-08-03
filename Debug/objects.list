@@ -1,4 +1,5 @@
 "./Core/Src/Drivers/ADC/ADC.o"
+"./Core/Src/Drivers/MPU6050/MPU6050.o"
 "./Core/Src/Drivers/OLED/OLED.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32f1xx_hal_msp.o"
